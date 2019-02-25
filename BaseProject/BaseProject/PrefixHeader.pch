@@ -49,12 +49,23 @@
 #import "UIImageView+Action.h"
 #import "UILabel+Action.h"
 #import "Macros.h"
+#import "NetTool.h"
 #endif /* PrefixHeader_pch */
 
 
 /*!
  * 常用的宏定义
  */
+
+
+// 弹出提示
+#define SVP_SHOW(msg) [SVProgressHUD showWithStatus:msg];
+#define SVP_ERROR(msg) [SVProgressHUD showErrorWithStatus:msg];[SVProgressHUD dismissWithDelay:1.5];
+#define SVP_SUCCESS(msg) [SVProgressHUD showSuccessWithStatus:msg];[SVProgressHUD dismissWithDelay:1.5];
+#define SVP_INFO(msg) [SVProgressHUD showSuccessWithStatus:msg];[SVProgressHUD dismissWithDelay:1.5];
+#define SVP_DISMISS [SVProgressHUD dismiss];
+
+
 
 // 快速设置颜色
 #define CRGB(R,G,B,A) [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
@@ -88,13 +99,11 @@
 
 
 //马坚本地
-#define Interface_URL @"http://192.168.1.203:9313/Index.asmx/"
-//#define Image_Base_URL @"http://192.168.1.203:10000"
+#define Interface_URL @"http://119.23.9.246:7889/Index.asmx/"
 
+#define Image_Base_URL @"http://119.23.9.246:7889"
 
-#define Image_Base_URL @"http://192.168.1.203:9313"
-
-#define H5_URL @"http://192.168.1.203:9001"
+#define H5_URL @"http://119.23.9.246:7889"
 
 
 

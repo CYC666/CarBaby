@@ -11,6 +11,15 @@
 		171245DD222386FB004F6C6C /* UIViewController+RTRootNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 171245D6222386FB004F6C6C /* UIViewController+RTRootNavigationController.m */; };
 		171245DE222386FB004F6C6C /* BaseRTNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 171245D8222386FB004F6C6C /* BaseRTNavigationController.m */; };
 		171245DF222386FB004F6C6C /* RTRootNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 171245DB222386FB004F6C6C /* RTRootNavigationController.m */; };
+		1712460B22239DF7004F6C6C /* ShowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712460922239DF7004F6C6C /* ShowController.m */; };
+		1712460C22239DF7004F6C6C /* ShowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1712460A22239DF7004F6C6C /* ShowController.xib */; };
+		1712460F2223F54F004F6C6C /* NetTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712460E2223F54F004F6C6C /* NetTool.m */; };
+		171246122223F5ED004F6C6C /* CoinModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 171246112223F5ED004F6C6C /* CoinModel.m */; };
+		1712461E22243F2B004F6C6C /* UILabel+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461422243F2B004F6C6C /* UILabel+Action.m */; };
+		1712461F22243F2B004F6C6C /* UIImageView+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461522243F2B004F6C6C /* UIImageView+Action.m */; };
+		1712462022243F2B004F6C6C /* CYC666.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461722243F2B004F6C6C /* CYC666.m */; };
+		1712462122243F2B004F6C6C /* UITextField+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461822243F2B004F6C6C /* UITextField+Action.m */; };
+		1712462222243F2B004F6C6C /* UIButton+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461B22243F2B004F6C6C /* UIButton+Action.m */; };
 		171A682A212E98930019E33C /* UILabel+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 171A6829212E98930019E33C /* UILabel+Action.m */; };
 		17369A7320EF0EE900C806EA /* PageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17369A6520EF0EE900C806EA /* PageView.m */; };
 		17369A7420EF0EE900C806EA /* SDCycleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17369A6620EF0EE900C806EA /* SDCycleScrollView.m */; };
@@ -70,11 +79,6 @@
 		17962D8D20AAD1BF001659AE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 17962D7820AAD1BF001659AE /* Reachability.m */; };
 		17962D8E20AAD1BF001659AE /* UIImageView+addproty.m in Sources */ = {isa = PBXBuildFile; fileRef = 17962D7920AAD1BF001659AE /* UIImageView+addproty.m */; };
 		17962D9120AAD206001659AE /* UserInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 17962D8F20AAD206001659AE /* UserInformation.m */; };
-		17D28F1C214F4FD9007E37D2 /* UILabel+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D28F12214F4FD9007E37D2 /* UILabel+Action.m */; };
-		17D28F1D214F4FD9007E37D2 /* UIImageView+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D28F13214F4FD9007E37D2 /* UIImageView+Action.m */; };
-		17D28F1E214F4FD9007E37D2 /* CYC666.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D28F15214F4FD9007E37D2 /* CYC666.m */; };
-		17D28F1F214F4FD9007E37D2 /* UITextField+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D28F16214F4FD9007E37D2 /* UITextField+Action.m */; };
-		17D28F20214F4FD9007E37D2 /* UIButton+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D28F19214F4FD9007E37D2 /* UIButton+Action.m */; };
 		17F6A16F212BE4E600259237 /* UIButton+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F6A16E212BE4E600259237 /* UIButton+Action.m */; };
 		17F6A172212BEB2200259237 /* UIImageView+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 17F6A171212BEB2200259237 /* UIImageView+Action.m */; };
 		5B9F51FC93F0323C4895AD76 /* libPods-BaseProject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E122754C31835A9D0C1B636 /* libPods-BaseProject.a */; };
@@ -107,6 +111,23 @@
 		171245D9222386FB004F6C6C /* UIViewController+RTRootNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+RTRootNavigationController.h"; sourceTree = "<group>"; };
 		171245DA222386FB004F6C6C /* BaseRTNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseRTNavigationController.h; sourceTree = "<group>"; };
 		171245DB222386FB004F6C6C /* RTRootNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTRootNavigationController.m; sourceTree = "<group>"; };
+		1712460822239DF7004F6C6C /* ShowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShowController.h; sourceTree = "<group>"; };
+		1712460922239DF7004F6C6C /* ShowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShowController.m; sourceTree = "<group>"; };
+		1712460A22239DF7004F6C6C /* ShowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShowController.xib; sourceTree = "<group>"; };
+		1712460D2223F54F004F6C6C /* NetTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetTool.h; sourceTree = "<group>"; };
+		1712460E2223F54F004F6C6C /* NetTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetTool.m; sourceTree = "<group>"; };
+		171246102223F5ED004F6C6C /* CoinModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoinModel.h; sourceTree = "<group>"; };
+		171246112223F5ED004F6C6C /* CoinModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoinModel.m; sourceTree = "<group>"; };
+		1712461422243F2B004F6C6C /* UILabel+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Action.m"; sourceTree = "<group>"; };
+		1712461522243F2B004F6C6C /* UIImageView+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+Action.m"; sourceTree = "<group>"; };
+		1712461622243F2B004F6C6C /* UIButton+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Action.h"; sourceTree = "<group>"; };
+		1712461722243F2B004F6C6C /* CYC666.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYC666.m; sourceTree = "<group>"; };
+		1712461822243F2B004F6C6C /* UITextField+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+Action.m"; sourceTree = "<group>"; };
+		1712461922243F2B004F6C6C /* UIImageView+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+Action.h"; sourceTree = "<group>"; };
+		1712461A22243F2B004F6C6C /* UILabel+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Action.h"; sourceTree = "<group>"; };
+		1712461B22243F2B004F6C6C /* UIButton+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Action.m"; sourceTree = "<group>"; };
+		1712461C22243F2B004F6C6C /* UITextField+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+Action.h"; sourceTree = "<group>"; };
+		1712461D22243F2B004F6C6C /* CYC666.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYC666.h; sourceTree = "<group>"; };
 		171A6828212E98930019E33C /* UILabel+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UILabel+Action.h"; sourceTree = "<group>"; };
 		171A6829212E98930019E33C /* UILabel+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Action.m"; sourceTree = "<group>"; };
 		17369A6220EF0EE900C806EA /* UIView+SDExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SDExtension.h"; sourceTree = "<group>"; };
@@ -228,16 +249,6 @@
 		17962D7C20AAD1BF001659AE /* UIColor+expanded.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+expanded.h"; sourceTree = "<group>"; };
 		17962D8F20AAD206001659AE /* UserInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInformation.m; sourceTree = "<group>"; };
 		17962D9020AAD206001659AE /* UserInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInformation.h; sourceTree = "<group>"; };
-		17D28F12214F4FD9007E37D2 /* UILabel+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Action.m"; sourceTree = "<group>"; };
-		17D28F13214F4FD9007E37D2 /* UIImageView+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+Action.m"; sourceTree = "<group>"; };
-		17D28F14214F4FD9007E37D2 /* UIButton+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Action.h"; sourceTree = "<group>"; };
-		17D28F15214F4FD9007E37D2 /* CYC666.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CYC666.m; sourceTree = "<group>"; };
-		17D28F16214F4FD9007E37D2 /* UITextField+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+Action.m"; sourceTree = "<group>"; };
-		17D28F17214F4FD9007E37D2 /* UIImageView+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+Action.h"; sourceTree = "<group>"; };
-		17D28F18214F4FD9007E37D2 /* UILabel+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Action.h"; sourceTree = "<group>"; };
-		17D28F19214F4FD9007E37D2 /* UIButton+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Action.m"; sourceTree = "<group>"; };
-		17D28F1A214F4FD9007E37D2 /* UITextField+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+Action.h"; sourceTree = "<group>"; };
-		17D28F1B214F4FD9007E37D2 /* CYC666.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYC666.h; sourceTree = "<group>"; };
 		17F6A16D212BE4E600259237 /* UIButton+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+Action.h"; sourceTree = "<group>"; };
 		17F6A16E212BE4E600259237 /* UIButton+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Action.m"; sourceTree = "<group>"; };
 		17F6A170212BEB2200259237 /* UIImageView+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImageView+Action.h"; sourceTree = "<group>"; };
@@ -316,6 +327,14 @@
 			children = (
 				171245D1222385C7004F6C6C /* MainController.h */,
 				171245D2222385C7004F6C6C /* MainController.m */,
+				1712460822239DF7004F6C6C /* ShowController.h */,
+				1712460922239DF7004F6C6C /* ShowController.m */,
+				1712460A22239DF7004F6C6C /* ShowController.xib */,
+				1712460D2223F54F004F6C6C /* NetTool.h */,
+				1712460E2223F54F004F6C6C /* NetTool.m */,
+				171246102223F5ED004F6C6C /* CoinModel.h */,
+				171246112223F5ED004F6C6C /* CoinModel.m */,
+				1712461322243F2B004F6C6C /* CYC666 */,
 			);
 			path = "首页";
 			sourceTree = "<group>";
@@ -347,6 +366,23 @@
 			children = (
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		1712461322243F2B004F6C6C /* CYC666 */ = {
+			isa = PBXGroup;
+			children = (
+				1712461422243F2B004F6C6C /* UILabel+Action.m */,
+				1712461522243F2B004F6C6C /* UIImageView+Action.m */,
+				1712461622243F2B004F6C6C /* UIButton+Action.h */,
+				1712461722243F2B004F6C6C /* CYC666.m */,
+				1712461822243F2B004F6C6C /* UITextField+Action.m */,
+				1712461922243F2B004F6C6C /* UIImageView+Action.h */,
+				1712461A22243F2B004F6C6C /* UILabel+Action.h */,
+				1712461B22243F2B004F6C6C /* UIButton+Action.m */,
+				1712461C22243F2B004F6C6C /* UITextField+Action.h */,
+				1712461D22243F2B004F6C6C /* CYC666.h */,
+			);
+			path = CYC666;
 			sourceTree = "<group>";
 		};
 		17369A6120EF0EE900C806EA /* SDCycleScrollView */ = {
@@ -607,7 +643,6 @@
 		17962D5720AAD1AE001659AE /* 常用组件 */ = {
 			isa = PBXGroup;
 			children = (
-				17D28F11214F4FD9007E37D2 /* CYC666 */,
 				17962D6C20AAD1BE001659AE /* BBBadgeBarButtonItem.h */,
 				17962D5E20AAD1BD001659AE /* BBBadgeBarButtonItem.m */,
 				17962D6520AAD1BD001659AE /* BlockButton.h */,
@@ -655,23 +690,6 @@
 				171A6829212E98930019E33C /* UILabel+Action.m */,
 			);
 			path = "常用组件";
-			sourceTree = "<group>";
-		};
-		17D28F11214F4FD9007E37D2 /* CYC666 */ = {
-			isa = PBXGroup;
-			children = (
-				17D28F12214F4FD9007E37D2 /* UILabel+Action.m */,
-				17D28F13214F4FD9007E37D2 /* UIImageView+Action.m */,
-				17D28F14214F4FD9007E37D2 /* UIButton+Action.h */,
-				17D28F15214F4FD9007E37D2 /* CYC666.m */,
-				17D28F16214F4FD9007E37D2 /* UITextField+Action.m */,
-				17D28F17214F4FD9007E37D2 /* UIImageView+Action.h */,
-				17D28F18214F4FD9007E37D2 /* UILabel+Action.h */,
-				17D28F19214F4FD9007E37D2 /* UIButton+Action.m */,
-				17D28F1A214F4FD9007E37D2 /* UITextField+Action.h */,
-				17D28F1B214F4FD9007E37D2 /* CYC666.h */,
-			);
-			path = CYC666;
 			sourceTree = "<group>";
 		};
 		8482D778212E93A50099AA05 /* IQKeyboardManager */ = {
@@ -836,6 +854,7 @@
 				8482D7AE212E93A50099AA05 /* README.md in Resources */,
 				8482D7AF212E93A50099AA05 /* IQKeyboardManager.bundle in Resources */,
 				8482D7AD212E93A50099AA05 /* LICENSE.md in Resources */,
+				1712460C22239DF7004F6C6C /* ShowController.xib in Resources */,
 				17962CB920AAD054001659AE /* ShareSDKUI.bundle in Resources */,
 				17962C4B20AACCC9001659AE /* Main.storyboard in Resources */,
 				17962CB220AAD054001659AE /* WeiboSDK.bundle in Resources */,
@@ -923,7 +942,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17D28F20214F4FD9007E37D2 /* UIButton+Action.m in Sources */,
+				1712460F2223F54F004F6C6C /* NetTool.m in Sources */,
 				17962D9120AAD206001659AE /* UserInformation.m in Sources */,
 				17369A7520EF0EE900C806EA /* UIView+SDExtension.m in Sources */,
 				1767D0B1212A990000D78EFB /* WMPageController.m in Sources */,
@@ -933,18 +952,15 @@
 				1767D0B4212A990000D78EFB /* WMMenuView.m in Sources */,
 				17962D8B20AAD1BF001659AE /* EncryptForInterface.m in Sources */,
 				17962CC920AAD0E6001659AE /* YLPinYin.c in Sources */,
-				17D28F1C214F4FD9007E37D2 /* UILabel+Action.m in Sources */,
 				8482D7A0212E93A50099AA05 /* IQUIScrollView+Additions.m in Sources */,
 				8482D79F212E93A50099AA05 /* IQNSArray+Sort.m in Sources */,
 				17369A7620EF0EE900C806EA /* SDCollectionViewCell.m in Sources */,
-				17D28F1E214F4FD9007E37D2 /* CYC666.m in Sources */,
 				17962CCA20AAD0E6001659AE /* YLChineseString.m in Sources */,
 				17369A7820EF0EE900C806EA /* TAPageControl.m in Sources */,
 				17962D8020AAD1BF001659AE /* GTMBase64.m in Sources */,
 				17962D5420AAD171001659AE /* WXUserDefaults.m in Sources */,
-				17D28F1F214F4FD9007E37D2 /* UITextField+Action.m in Sources */,
+				1712461F22243F2B004F6C6C /* UIImageView+Action.m in Sources */,
 				8482D7A6212E93A50099AA05 /* IQKeyboardReturnKeyHandler.m in Sources */,
-				17D28F1D214F4FD9007E37D2 /* UIImageView+Action.m in Sources */,
 				8482D7A8212E93A50099AA05 /* IQBarButtonItem.m in Sources */,
 				17962D8A20AAD1BF001659AE /* UIView+JKFrame.m in Sources */,
 				8482D7AA212E93A50099AA05 /* IQTitleBarButtonItem.m in Sources */,
@@ -971,16 +987,20 @@
 				171245DE222386FB004F6C6C /* BaseRTNavigationController.m in Sources */,
 				17369A7920EF0EE900C806EA /* TAAnimatedDotView.m in Sources */,
 				17F6A16F212BE4E600259237 /* UIButton+Action.m in Sources */,
+				1712460B22239DF7004F6C6C /* ShowController.m in Sources */,
 				17962D5520AAD171001659AE /* WXApiManager.m in Sources */,
 				1767D0B2212A990000D78EFB /* WMMenuItem.m in Sources */,
+				171246122223F5ED004F6C6C /* CoinModel.m in Sources */,
 				17962C5520AACD0B001659AE /* WebForCommonViewController.m in Sources */,
 				1767D0B5212A990000D78EFB /* WMProgressView.m in Sources */,
 				8482D7A5212E93A50099AA05 /* IQKeyboardManager.m in Sources */,
 				8482D7A3212E93A50099AA05 /* IQUIViewController+Additions.m in Sources */,
 				17369A7720EF0EE900C806EA /* TADotView.m in Sources */,
 				17962D8120AAD1BF001659AE /* BBBadgeBarButtonItem.m in Sources */,
+				1712462222243F2B004F6C6C /* UIButton+Action.m in Sources */,
 				171245D3222385C7004F6C6C /* MainController.m in Sources */,
 				17369A7320EF0EE900C806EA /* PageView.m in Sources */,
+				1712461E22243F2B004F6C6C /* UILabel+Action.m in Sources */,
 				17962D8820AAD1BF001659AE /* UIColor+expanded.m in Sources */,
 				171245DD222386FB004F6C6C /* UIViewController+RTRootNavigationController.m in Sources */,
 				17962D8220AAD1BF001659AE /* CALayer+Addition.m in Sources */,
@@ -991,7 +1011,9 @@
 				1767D0B3212A990000D78EFB /* WMScrollView.m in Sources */,
 				171245DF222386FB004F6C6C /* RTRootNavigationController.m in Sources */,
 				17918C7F20AAC96C00366197 /* BaseProject.xcdatamodeld in Sources */,
+				1712462022243F2B004F6C6C /* CYC666.m in Sources */,
 				17962D8420AAD1BF001659AE /* FadeAlertView.m in Sources */,
+				1712462122243F2B004F6C6C /* UITextField+Action.m in Sources */,
 				17962D7D20AAD1BF001659AE /* BlockButton.m in Sources */,
 				8482D7AC212E93A50099AA05 /* IQUIView+IQKeyboardToolbar.m in Sources */,
 			);
@@ -1136,7 +1158,7 @@
 					"\"$(SRCROOT)/BaseProject/第三方/aliPaySDK\"",
 				);
 				INFOPLIST_FILE = BaseProject/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1185,7 +1207,7 @@
 					"\"$(SRCROOT)/BaseProject/第三方/aliPaySDK\"",
 				);
 				INFOPLIST_FILE = BaseProject/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

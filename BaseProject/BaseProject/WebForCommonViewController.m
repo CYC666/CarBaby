@@ -7,7 +7,6 @@
 //
 
 #import "WebForCommonViewController.h"
-#import "NavBar.h"
 
 @interface WebForCommonViewController () <UIWebViewDelegate>
 {
@@ -30,11 +29,6 @@
     //设置导航栏标题和按钮
     self.navigationItem.title = _naviTitle;
     
-    NavBar *navBar = [[NavBar alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, Nav_Height)];
-    navBar.title.text = _naviTitle;
-    navBar.left.hidden = NO;
-    [navBar.left addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:navBar];
     
     //导航栏左右按钮
     //    UIBarButtonItem *buttonReturn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(gotoReturnPop)];
