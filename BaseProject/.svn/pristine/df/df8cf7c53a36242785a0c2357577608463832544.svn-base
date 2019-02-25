@@ -1,0 +1,30 @@
+//
+//  NewsDetialController.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CYCController.h"
+@class NewsListModel;
+
+@interface NewsDetialController : CYCController
+
+@property (strong, nonatomic) NewsListModel *listModel;
+
+@property (weak, nonatomic) IBOutlet UIButton *button1;
+@property (weak, nonatomic) IBOutlet UILabel *label1;
+
+
+
+@property (weak, nonatomic) IBOutlet UIButton *button2;
+@property (weak, nonatomic) IBOutlet UIImageView *icon2;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomHeight;
+
+
+
+
+
+@end

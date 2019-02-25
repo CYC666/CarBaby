@@ -1,0 +1,120 @@
+//
+//  MineController.m
+//  LFBaseFrameTwo
+//
+//  Created by 曹老师 on 2018/5/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import "MineController.h"
+#import "LoginController.h"
+#import "CYCnavController.h"
+
+@interface MineController ()
+
+@end
+
+@implementation MineController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"我的";
+    
+    
+}
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self checkLoginAction];
+    
+    
+}
+
+#pragma mark - 检测登录状态
+- (void)checkLoginAction {
+    
+    /*
+     * 判断是否有7天内的登录userId，有的话直接登录
+     */
+    
+    
+    //7天内记住用户登录状态，读取NSUserDefaults文件
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"LoginDate"] == nil ||
+        [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginUserId"] == nil) {
+        
+        NSLog(@"没有登录记录，正常登录");
+        
+        CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+        [self presentViewController:nav animated:YES completion:nil];
+        
+    } else {
+        //登录时间
+        NSString *loginDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginDate"];
+        //登录id
+        NSString *loginUserId = [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginUserId"];
+        
+        if ([SmallFunctionTool timeDifferenceForNow:loginDate] > (3600 * 24 * 7)) {
+            NSLog(@"没有7天内的登录记录，正常登录");
+            
+            CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+            [self presentViewController:nav animated:YES completion:nil];
+            
+        } else {
+            
+            // 登录，获取个人信息
+            
+        }
+    }
+    
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

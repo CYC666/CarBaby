@@ -1,0 +1,209 @@
+//
+//  MallController.m
+//  LFBaseFrameTwo
+//
+//  Created by 曹老师 on 2018/5/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import "MallController.h"
+#import "CoinModel.h"
+#import "SearchCoinController.h"
+#import "SortClassController.h"
+#import "NoSearchCoinController.h"
+#import "CoinDetailController.h"
+@interface MallController ()<UICollectionViewDataSource, UICollectionViewDelegate>
+@property (weak, nonatomic) IBOutlet UICollectionView *myCollectionView;
+@property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *myLayout;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topC;
+
+@property (nonatomic, assign) NSInteger pageIndex;
+@property (nonatomic, strong) NSMutableArray *dataArray;
+
+@end
+
+@implementation MallController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"世界货币";
+    
+    _topC.constant = Nav_Height + 10;
+    
+    
+    [self.navBar.right setImage:[[UIImage imageNamed:@"搜索_0"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    self.navBar.right.frame = CGRectMake(0, 0, 50, 36);
+    //self.navBar.right.backgroundColor = [UIColor randomColor];
+    [self.navBar.right setTitle:@"" forState:UIControlStateNormal];
+    [self.navBar.right addTarget:self action:@selector(goSearch) forControlEvents:UIControlEventTouchUpInside];
+    self.navBar.right.hidden = NO;
+    _myLayout.minimumLineSpacing = 0;
+    _myLayout.minimumInteritemSpacing = 0;
+    _myLayout.itemSize = CGSizeMake(SCREEN_WIDTH/3.0, (SCREEN_WIDTH/3.0-8.0) + 16 + 36);
+    _myCollectionView.delegate = self;
+    _myCollectionView.dataSource = self;
+    
+    __weak typeof(self) weakSelf = self;
+    _myCollectionView.mj_footer = [MJRefreshFooter footerWithRefreshingBlock:^{
+        [weakSelf getCoinData:NO];
+    }];
+    [self getCoinData:YES];
+    
+}
+
+- (void)goSearch
+{
+    SearchCoinController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SearchCoinController"];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)coinAllSort:(UIButton *)sender
+{
+    SortClassController *vc = [[UIStoryboard storyboardWithName:@"Coin" bundle:nil] instantiateViewControllerWithIdentifier:@"SortClassController"];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)popularCoin:(UIButton *)sender
+{
+    NoSearchCoinController *vc = [[UIStoryboard storyboardWithName:@"Coin" bundle:nil] instantiateViewControllerWithIdentifier:@"NoSearchCoinController"];
+    vc.sortTitle = @"人气货币";
+    vc.isFavorite = YES;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)imageSearchImage:(UIButton *)sender
+{
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+
+
+#pragma mark ========================================网络请求=============================================
+
+- (void)getCoinData:(BOOL)isRefresh
+{
+    /*
+     GetPageCommodity
+     [111]钱币 => 获取钱币列表
+     UserId:用户主键(默认传default,涉及到是否收藏时必传)
+     PageSize:每页数
+     PageIndex:当前页
+     Level3:三级分类(默认传default)
+     FullName:钱币名称(默认传default)
+     HomeMark:是否最新收录(默认传default,是最新收录传1)
+     IsPopularity:是否人气钱币(默认传default,是人气钱币传1)
+     MallMark：钱币类型(1-纸币、2-硬币、3-纪念币、100-查全部)
+     */
+    if (isRefresh) {
+        _pageIndex = 1;
+    }else{
+        _pageIndex ++;
+    }
+    NSDictionary *parma = @{
+                            @"UserId":[UserInformation sharedInstance].UserId,
+                            @"PageIndex":@(_pageIndex),
+                            @"PageSize":@(9),
+                            @"Level3":@"default",
+                            @"FullName":@"default",
+                            @"HomeMark":@"1",
+                            @"IsPopularity":@"default",
+                            @"MallMark":@"100",
+                            };
+    
+    [SOAPUrlSession SOAPDataWithMethod:@"GetPageCommodity" parameter:parma success:^(id responseObject) {
+        [self.myCollectionView.mj_header endRefreshing];
+        [self.myCollectionView.mj_footer endRefreshing];
+        if (isRefresh) {
+            self.dataArray = [[NSMutableArray alloc] init];
+        }
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            NSArray *data = responseObject[@"Data"][@"rows"];
+            for (NSDictionary *dic in data) {
+                CoinModel *model = [CoinModel mj_objectWithKeyValues:dic];
+                [self.dataArray addObject:model];
+            }
+            if (data.count < 9) {
+                [self.myCollectionView.mj_footer endRefreshingWithNoMoreData];
+            }
+        }else{
+            
+        }
+        [self.myCollectionView reloadData];
+    } failure:^(NSError *error) {
+        [self.myCollectionView.mj_header endRefreshing];
+        [self.myCollectionView.mj_footer endRefreshingWithNoMoreData];
+    }];
+}
+
+
+#pragma mark ========================================代理方法=============================================
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return self.dataArray.count;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    MallCoinItemCCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MallCoinItemCCell" forIndexPath:indexPath];
+    
+    CoinModel *model = self.dataArray[indexPath.item];
+    cell.nameLabel.text = model.fullname;
+    [cell.iconImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",Image_Base_URL,model.filepath]] placeholderImage:[UIImage imageNamed:@"default_image"]];
+    
+    return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    CoinDetailController *vc = [[UIStoryboard storyboardWithName:@"Coin" bundle:nil] instantiateViewControllerWithIdentifier:@"CoinDetailController"];
+    CoinModel *model = self.dataArray[indexPath.item];
+    vc.model = model;
+    [PPViewController presentVC:vc];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end
+
+
+@implementation MallCoinItemCCell
+
+@end

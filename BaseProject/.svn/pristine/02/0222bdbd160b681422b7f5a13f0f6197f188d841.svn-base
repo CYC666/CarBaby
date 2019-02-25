@@ -1,0 +1,19 @@
+//
+//  NoSearchCoinController.h
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface NoSearchCoinController : CYCController
+
+@property (nonatomic, copy) NSString *sortId;
+
+@property (nonatomic, copy) NSString *sortTitle;
+
+@property (nonatomic, assign) BOOL isFavorite;
+
+@end

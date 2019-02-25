@@ -1,0 +1,124 @@
+//
+//  CollectListController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CollectListController.h"
+#import "CollectController.h"
+#import "CollectCoinController.h"
+
+@interface CollectListController () {
+    
+    NavBar *navBar;
+    UserInformation *userInfo;              // 用户信息单例
+    
+    
+}
+
+@property (strong, nonatomic) NSArray *dataArray;   // 数据列表
+
+@end
+
+
+@implementation CollectListController
+
+
+
+#pragma mark ========================================生命周期========================================
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.menuItemWidth = SCREEN_WIDTH/5.0;
+        self.menuViewStyle = WMMenuViewStyleLine;
+        self.titleSizeSelected = 15.0;
+        self.titleSizeNormal = 14.0;
+        self.titleColorSelected = Publie_Color;
+        self.menuHeight = 48;
+        self.progressHeight = 2;
+        self.viewFrame = CGRectMake(0, Nav_Height, SCREEN_WIDTH, SCREEN_HEIGHT-Nav_Height);
+        self.progressColor = Publie_Color;
+        self.menuBGColor = [UIColor whiteColor];
+    }
+    return self;
+}
+
+
+
+- (NSArray *)dataArray {
+    
+    if (!_dataArray) {
+        _dataArray = @[@"文章", @"钱币"];
+    }
+    return _dataArray;
+    
+}
+
+- (void)viewDidLoad {
+    
+    [super viewDidLoad];
+    
+    navBar = [[NavBar alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, Nav_Height)];
+    navBar.title.text = @"我的收藏";
+    navBar.left.hidden = NO;
+    [navBar.left setTitle:@"" forState:UIControlStateNormal];
+    [navBar.left setImage:[[UIImage imageNamed:@"back"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    [self.view addSubview:navBar];
+    
+    [navBar.left addAction:^(NSInteger index) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+    
+    
+    if (!_isNews) {
+        self.selectIndex = 1;
+    }
+    
+}
+
+
+
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark ========================================代理方法=============================================
+
+- (NSInteger)numbersOfChildControllersInPageController:(WMPageController *)pageController {
+    return self.dataArray.count;
+}
+
+- (NSString *)pageController:(WMPageController *)pageController titleAtIndex:(NSInteger)index {
+    return self.dataArray[index];
+}
+
+
+- (UIViewController *)pageController:(WMPageController *)pageController viewControllerAtIndex:(NSInteger)index {
+    
+    if (index == 0) {
+        CollectController *vc = [[CollectController alloc] init];
+        return vc;
+    
+    } else {
+        CollectCoinController *ctrl = [[CollectCoinController alloc] init];
+        return ctrl;
+    }
+    
+    
+}
+
+- (void)pageController:(WMPageController *)pageController didEnterViewController:(__kindof UIViewController *)viewController withInfo:(NSDictionary *)info {
+    
+}
+
+
+
+
+
+
+@end

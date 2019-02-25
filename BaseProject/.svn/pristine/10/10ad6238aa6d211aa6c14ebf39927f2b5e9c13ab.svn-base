@@ -1,0 +1,225 @@
+//
+//  MineFriendsListController.m
+//  BaseProject
+//
+//  Created by KOK on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "MineFriendsListController.h"
+#import "MineFriendListCell.h"
+#import "MineFriendModel.h"
+
+
+@interface MineFriendsListController () <UITableViewDelegate, UITableViewDataSource> {
+    
+    UITableView *_listTableView;
+    NSMutableArray *dataArray;   // 数据列表
+    UIView *noDataView;
+    
+}
+
+@end
+
+@implementation MineFriendsListController
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+
+    self.view.backgroundColor = Background_Color;
+    dataArray = [NSMutableArray array];
+    
+    // 创建视图
+    [self creatSubViewsAction];
+    
+    
+    
+}
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self loadFriendsAction];
+    
+    
+}
+
+
+#pragma mark ========================================私有方法=============================================
+
+#pragma mark - 创建视图
+- (void)creatSubViewsAction {
+    
+    // 表视图
+    _listTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight - Nav_Height - 40)
+                                                  style:UITableViewStylePlain];
+    _listTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    _listTableView.backgroundColor = [UIColor clearColor];
+    _listTableView.delegate = self;
+    _listTableView.dataSource = self;
+    [_listTableView registerNib:[UINib nibWithNibName:@"MineFriendListCell" bundle:[NSBundle mainBundle]]
+         forCellReuseIdentifier:@"MineFriendListCell"];
+    [self.view addSubview:_listTableView];
+    
+    if(@available(iOS 11.0, *)){
+        _listTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark - 获取好友列表
+- (void)loadFriendsAction {
+    
+    NSString *method = [NSString stringWithFormat:@"GetUserTeamInfo"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         nil];
+    
+    //发送soap请求
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        [dataArray removeAllObjects];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            
+            for (NSDictionary *dic in responseObject[@"Data"]) {
+                MineFriendModel *model = [MineFriendModel mj_objectWithKeyValues:dic];
+                [dataArray addObject:model];
+            }
+            
+        }
+        
+        
+        //主线程更新视图
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //去掉无数据时的视图
+            if (noDataView) {
+                [noDataView removeFromSuperview];
+                noDataView = nil;
+            }
+            
+            if (dataArray.count == 0) {
+                
+                noDataView = [[UIView alloc] initWithFrame:CGRectMake(0, 50, SCREEN_WIDTH, SCREEN_HEIGHT)];
+                noDataView.backgroundColor = Background_Color;
+                
+                //图标
+                UIImageView *noDataImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"暂无收益数据"]];
+                noDataImage.center = CGPointMake(SCREEN_WIDTH/2.0, (SCREEN_HEIGHT-50)/2.0 - 150);
+                [noDataView addSubview:noDataImage];
+                [_listTableView addSubview:noDataView];
+                
+            } else {
+                
+                [_listTableView reloadData];
+                
+            }
+            
+        });
+        
+        
+        
+        
+        
+    } failure:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        });
+        
+    }];
+    
+}
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark - 表视图代理方法
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+    
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return dataArray.count;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return 70;
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    
+    return 0.01;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    return 0.01;
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    MineFriendListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MineFriendListCell"
+                                                            forIndexPath:indexPath];
+    
+    if (indexPath.row < dataArray.count) {
+        MineFriendModel *model = dataArray[indexPath.row];
+        
+        // 图片s
+        NSString *path = [NSString stringWithFormat:@"%@%@", Image_Base_URL, model.HeadIcon];
+        [cell.icon sd_setImageWithURL:[NSURL URLWithString:path]
+                              placeholderImage:[UIImage imageNamed:@"暂无收益数据"]
+                                       options:SDWebImageRetryFailed];
+        cell.name.text = model.NickName;
+        cell.time.text = model.CreateDate;
+        cell.phone.text = model.Mobile;
+        
+        
+    }
+    
+    return cell;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    
+}
+
+
+#pragma mark ========================================通知================================================
+
+
+
+
+
+
+
+@end

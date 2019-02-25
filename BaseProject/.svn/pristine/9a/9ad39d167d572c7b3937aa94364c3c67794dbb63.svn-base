@@ -1,0 +1,20 @@
+//
+//  CurrencyConvertersCell.h
+//  BaseProject
+//
+//  Created by admin on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface CurrencyConvertersCell : UITableViewCell
+
+@property (weak, nonatomic) IBOutlet UIImageView *img;
+
+@property (weak, nonatomic) IBOutlet UILabel *bihzongLab;
+
+@property (weak, nonatomic) IBOutlet UITextField *textMoney;
+@property (weak, nonatomic) IBOutlet UILabel *desLab;
+
+@end

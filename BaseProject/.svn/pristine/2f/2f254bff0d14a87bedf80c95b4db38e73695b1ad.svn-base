@@ -1,0 +1,200 @@
+//
+//  ChangePhoneController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/8.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ChangePhoneController.h"
+#import "ChangePhoneNextController.h"
+
+@interface ChangePhoneController () <UITextFieldDelegate> {
+    
+    dispatch_source_t _timer;
+    NSString *codeStr;
+    
+    
+}
+
+@end
+
+@implementation ChangePhoneController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"更换手机号";
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    _phoneLabel.text = [UserInformation sharedInstance].Mobile;
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    _codeButton.layer.borderWidth = 1;
+    _codeButton.layer.borderColor = _codeButton.titleLabel.textColor.CGColor;
+    
+    _codefield.delegate = self;
+    [_sureButton addTarget:self action:@selector(sureButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_codeButton addTarget:self action:@selector(loadCodeAction) forControlEvents:UIControlEventTouchUpInside];
+}
+
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                codeStr = @"验证码失效";
+                
+                
+                _codeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                
+                //按钮不可点击
+                _codeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+
+#pragma mark - 获取验证码
+- (void)loadCodeAction {
+    
+    if (![SmallFunctionTool checkTelNumber:_phoneLabel.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"手机号不正确"];
+        return;
+    }
+    
+    NSString *method = [NSString stringWithFormat:@"sms/getMsg"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         _phoneLabel.text,@"phone",
+                         @"EDIT",@"types",  // 类型( REG//注册, EDIT//修改手机号,BD//绑定新手机号，SIGN//注册，FORGET//忘记密码)
+                         nil];
+    
+    [self codeButtonActive];
+    
+    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+        
+        NSString *codee = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        if ([codee isEqualToString:@"200"]) {
+            
+            codeStr = [NSString stringWithFormat:@"%@", responseObject[@"data"]];
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"发送验证码成功"];
+                
+            });
+            
+        } else {
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+                
+            });
+        }
+        
+        
+        
+        
+        
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    if ([_codefield.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    
+    if (![_codefield.text isEqualToString:codeStr]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"输入验证码有误"];
+        return;
+    }
+    
+    ChangePhoneNextController *ctrl = [[ChangePhoneNextController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+
+    [self sureButtonAction:nil];
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

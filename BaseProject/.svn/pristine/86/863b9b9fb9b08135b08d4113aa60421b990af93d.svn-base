@@ -1,0 +1,630 @@
+//
+//  PersonalCenterController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/6.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "PersonalCenterController.h"
+#import <UIImageView+WebCache.h>
+#import "SnailPopupController.h"
+#import "LDImagePicker.h"
+#import "ContractwoView.h"
+#import "MineChangeInfoController.h"
+#import <UIButton+WebCache.h>
+#import "AddressModel.h"
+#import "AddressPickerView.h"
+
+@interface PersonalCenterController ()<LDImagePickerDelegate, AddressPickerViewDelegate> {
+    //用户信息单例
+    UserInformation *userInfo;
+    
+}
+@property (nonatomic, strong) ContractwoView *contractView;
+@property (strong, nonatomic) UIImage *icon;
+@property (strong, nonatomic) AddressPickerView *addressViews;  // 地址选取
+
+@end
+
+@implementation PersonalCenterController
+
+
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    //导航栏标题
+    self.title = @"个人资料";
+    self.view.backgroundColor=Background_Color;
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    //初始化
+    userInfo = [UserInformation sharedInstance];
+    
+
+    // 头像
+    [_headButton addTarget:self action:@selector(btnImageHead:) forControlEvents:UIControlEventTouchUpInside];
+    // 所在地
+    [_locationButton addTarget:self action:@selector(btnAddress:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    
+    [self loadUserInfoAction];
+    
+    
+    
+}
+
+
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+        if (_addressViews) {
+        [_addressViews removeFromSuperview];
+        _addressViews = nil;
+    }
+}
+
+
+- (void)close {
+    [self.sl_popupController dismiss];
+}
+
+
+- (ContractwoView *)contractView {
+    if (!_contractView) {
+        _contractView =  [ContractwoView viewFromNIB];
+        _contractView.frame = CGRectMake((SCREEN_WIDTH-300)/2.0, (SCREEN_HEIGHT-160)/2.0, 300, 160);
+        [_contractView.phoneBtn1 addTarget:self action:@selector(phoneBtn1) forControlEvents:UIControlEventTouchUpInside];
+        [_contractView.phoneBtn2 addTarget:self action:@selector(phoneBtn2) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _contractView;
+}
+
+- (AddressPickerView *)addressViews {
+    
+    if (!_addressViews) {
+        
+        _addressViews = [[AddressPickerView alloc] initWithFrame:CGRectMake(0, kScreenHeight, kScreenWidth, kScreenHeight)];
+        [_addressViews.cancelButton addTarget:self action:@selector(closeAddressViewAction) forControlEvents:UIControlEventTouchUpInside];
+        [_addressViews.cancelButton2 addTarget:self action:@selector(closeAddressViewAction) forControlEvents:UIControlEventTouchUpInside];
+        _addressViews.delegate = self;
+        [[UIApplication sharedApplication].keyWindow addSubview:_addressViews];
+    }
+    
+    [UIView animateWithDuration:.35 animations:^{
+        _addressViews.transform = CGAffineTransformMakeTranslation(0, -kScreenHeight);
+        self.navigationController.view.alpha = 0.5;
+    }];
+    
+    return _addressViews;
+    
+    
+    
+}
+
+#pragma mark - 显示省市区
+- (void)showLocationAction {
+    
+    if (userInfo.ProvinceName == nil || [userInfo.ProvinceName isEqualToString:@""]) {
+        _locationLabel.text = @"未设置";
+        return;
+    }
+    
+    
+    
+}
+
+
+#pragma mark ========================================生命周期========================================
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+#pragma mark - 点击头像
+-(void)btnImageHead:(UIButton *)sender{
+    
+    //按钮0.3秒只可以点击1次
+    [SmallFunctionTool singleClickButtonRestriction:sender];
+    
+    self.sl_popupController = [SnailPopupController new];
+    self.sl_popupController.maskAlpha = 0.5;
+    [self.sl_popupController presentContentView:self.contractView duration:0.5 elasticAnimated:YES];
+    
+}
+
+
+
+// 相册弹出框
+-(void)phoneBtn1{
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self close];
+        //打开相机
+        LDImagePicker *imagePicker = [LDImagePicker sharedInstance];
+        imagePicker.delegate = self;
+        [imagePicker showImagePickerWithType:ImagePickerCamera InViewController:self Scale:1];
+    });
+    
+}
+-(void)phoneBtn2{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self close];
+        //打开手机相册
+        LDImagePicker *imagePicker = [LDImagePicker sharedInstance];
+        imagePicker.delegate = self;
+        [imagePicker showImagePickerWithType:ImagePickerPhoto InViewController:self Scale:1];
+    });
+    
+}
+
+#pragma mark - 更换昵称
+- (void)changeNickName:(UIButton *)button
+{
+    MineChangeInfoController *vc = [[UIStoryboard storyboardWithName:@"Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"MineChangeInfoController"];
+    vc.type = 0;
+    __weak typeof(self) weakSelf = self;
+    vc.finishBlock = ^{
+        [weakSelf loadUserInfoAction];
+    };
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+// 邮箱
+-(void)zhanghuLiuBtn:(UIButton *)sender
+{
+    MineChangeInfoController *vc = [[UIStoryboard storyboardWithName:@"Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"MineChangeInfoController"];
+    vc.type = 1;
+    __weak typeof(self) weakSelf = self;
+    vc.finishBlock = ^{
+        [weakSelf loadUserInfoAction];
+    };
+    [self.navigationController pushViewController:vc animated:YES];
+}
+// QQ
+-(void)QQBtn:(UIButton *)sender{
+    
+    MineChangeInfoController *vc = [[UIStoryboard storyboardWithName:@"Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"MineChangeInfoController"];
+    vc.type = 2;
+    __weak typeof(self) weakSelf = self;
+    vc.finishBlock = ^{
+        [weakSelf loadUserInfoAction];
+    };
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+#pragma mark - 选择所在地
+-(void)btnAddress:(UIButton *)sender{
+    
+    sender.userInteractionEnabled = NO;
+    
+//    if (userInfo.locationArray.count > 0) {
+//
+//        // 已经获取到了数据，不用再次获取
+//        sender.userInteractionEnabled = YES;
+//
+//        self.addressViews.dataArray1 = userInfo.locationArray;
+//
+//
+//    } else {
+//
+//        // 获取列表
+//        [self loadAddressAction];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            sender.userInteractionEnabled = YES;
+//        });
+//
+//    }
+    
+    
+    
+    
+    
+}
+
+
+#pragma mark - 关闭选择地址
+- (void)closeAddressViewAction {
+    
+    if (_addressViews) {
+        [UIView animateWithDuration:.35 animations:^{
+            _addressViews.transform = CGAffineTransformMakeTranslation(0, 0);
+            self.navigationController.view.alpha = 1;
+        } completion:^(BOOL finished) {
+            [_addressViews removeFromSuperview];
+            _addressViews = nil;
+        }];
+    }
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark - 获取用户信息，刷新UI
+- (void)loadUserInfoAction {
+    
+    NSString *method = [NSString stringWithFormat:@"appUser/detail"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"user_id",
+                         nil];
+    
+    [SVProgressHUD showWithStatus:@"个人资料加载中"];
+
+    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            userInfo = [UserInformation mj_objectWithKeyValues:responseObject[@"data"][@"user"]];
+            
+//            if (userInfo.sex != nil && ![userInfo.sex isEqualToString:@""]) {
+//
+//                if ([userInfo.sex isEqualToString:@"0"]) {
+//                    _icon = [UIImage imageNamed:@"boy"];
+//                } else {
+//                    _icon = [UIImage imageNamed:@"girl"];
+//                }
+//
+//            } else {
+//                _icon = [UIImage imageNamed:@"boy"];
+//            }
+//
+//            // 头像
+//            if ([userInfo.headURL isEqualToString:@""] || userInfo.headURL == nil) {
+//                //无自定义头像，则使用默认头像
+//                _headIcon.image = _icon;
+//            } else {
+//                //有自定义头像，则下载并显示
+//                NSString *path = [NSString stringWithFormat:@"%@%@", Image_Base_URL, userInfo.headURL];
+//                [_headIcon sd_setImageWithURL:[NSURL URLWithString:path]
+//                             placeholderImage:_icon
+//                                      options:SDWebImageRetryFailed];
+//            }
+            
+            _headIcon.layer.cornerRadius = 25;
+            _headIcon.layer.borderWidth = 3;
+            _headIcon.layer.borderColor = Background_Color.CGColor;
+            _headIcon.clipsToBounds = YES;
+            
+            // 昵称
+            [_nameButton addTarget:self action:@selector(changeNickName:) forControlEvents:UIControlEventTouchUpInside];
+            if (userInfo.NickName == nil || [userInfo.NickName isEqualToString:@""]) {
+                _nameLabel.text = @"未设置";
+            } else {
+                _nameLabel.text = userInfo.NickName;
+            }
+            
+            // 性别
+            if (userInfo.Gender == nil || [userInfo.Gender isEqualToString:@""]) {
+                _sexLabel.text = @"未设置";
+                _sexLabel.textColor=CRGB(128, 128, 128, 1);
+            } else {
+                _sexLabel.text = [userInfo.Gender isEqualToString:@"0"] ? @"男" : @"女";
+                _sexLabel.textColor=[UIColor blackColor];
+            }
+            
+            //邮箱
+            [_emalButton addTarget:self action:@selector(zhanghuLiuBtn:) forControlEvents:UIControlEventTouchUpInside];
+            
+            if (userInfo.Email == nil || [userInfo.Email isEqualToString:@""]) {
+                _emalLabel.text = @"未设置";
+            } else {
+                _emalLabel.text = userInfo.Email;
+            }
+            
+            //QQ
+            [_qqButton addTarget:self action:@selector(QQBtn:) forControlEvents:UIControlEventTouchUpInside];
+            if (userInfo.OpenId2 == nil || [userInfo.OpenId2 isEqualToString:@""]) {
+                _qqLabel.text =@"未设置";
+            } else {
+                _qqLabel.text = userInfo.OpenId2;
+            }
+            
+//            //生日
+//            if (userInfo.Birthday != nil && userInfo.identityCode.length >= 14) {
+//                _birthLabel.text = [NSString stringWithFormat:@"%@/%@/%@",
+//                                    [userInfo.identityCode substringWithRange:NSMakeRange(6, 4)],
+//                                    [userInfo.identityCode substringWithRange:NSMakeRange(10, 2)],
+//                                    [userInfo.identityCode substringWithRange:NSMakeRange(12, 2)]];
+//            }
+//
+            
+//            // 是否已经下载过省市区列表
+//            if (userInfo.locationArray.count > 0) {
+//                // 直接显示省市区
+//                [self showLocationAction];
+//            } else {
+//                // 获取省市区
+//                [self loadAddressAction];
+//            }
+            
+
+        }
+        
+        
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+#pragma mark - 获取省市区
+- (void)loadAddressAction {
+    
+    NSString *method = [NSString stringWithFormat:@"pca/pcaList"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         userInfo.UserId,@"phone",
+                         nil];
+    
+    
+    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            // 解析省市区地址
+            NSArray *list = responseObject[@"data"];
+            for (NSDictionary *dic1 in list) {
+                AddressModel *model1 = [AddressModel mj_objectWithKeyValues:dic1];
+                [model1.chirldData removeAllObjects];
+                
+                NSArray *list1 = dic1[@"chirldData"];
+                if (list1.count > 0) {
+                    
+                    for (NSDictionary *dic2 in list1) {
+                        AddressModel *model2 = [AddressModel mj_objectWithKeyValues:dic2];
+                        [model2.chirldData removeAllObjects];
+                        
+                        NSArray *list2 = dic2[@"chirldData"];
+                        if (list2.count > 0) {
+                            
+                            for (NSDictionary *dic3 in list2) {
+                                AddressModel *model3 = [AddressModel mj_objectWithKeyValues:dic3];
+                                [model2.chirldData addObject:model3];
+                            }
+                            
+                        }
+                        
+                        
+                        [model1.chirldData addObject:model2];
+                    }
+                    
+                }
+                
+//                [userInfo.locationArray addObject:model1];
+            }
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [self showLocationAction];
+                
+            });
+            
+            
+        } else {
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+                
+            });
+            
+            
+        }
+        
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark UIImagePickerControllerDelegate委托方法
+
+- (void)imagePickerDidCancel:(LDImagePicker *)imagePicker{
+    
+    
+}
+//新！图片选择完毕
+- (void)imagePicker:(LDImagePicker *)imagePicker didFinished:(UIImage *)editedImage {
+    
+    
+    //上传头像
+    NSData *imageData = UIImageJPEGRepresentation(editedImage, 0.1);
+    
+    NSString *method = [NSString stringWithFormat:@"appUser/upload"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         @"n", @"file",
+                         nil];
+    
+    [SVProgressHUD showWithStatus:@"上传头像中"];
+
+    
+    [SOAPUrlSession AFHTTPDataManaager:method parameter:dic imageData:imageData success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            NSString *path = [NSString stringWithFormat:@"%@", responseObject[@"data"][@"filePath"]];
+            
+            // 修改头像
+//            NSString *method = [NSString stringWithFormat:@"appUser/update_img"];
+//            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+//                                 userInfo.userID,@"user_id",
+//                                 path,@"user_img",
+//                                 nil];
+//
+//            [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+//
+//                NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+//
+//                //主线程更新视图
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                    if ([code isEqualToString:@"200"]) {
+//
+//                        //显示对应的图片
+//                        _headIcon.image = editedImage;
+//                    }
+//                });
+//
+//                //主线程更新视图
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                    FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+//                    [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+//
+//                });
+//            } failure:^(NSError *error) {
+//
+//                //后台连接直接不成功，弹出“连接服务器失败”
+//                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+//                [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+//            }];
+        }
+        
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+}
+
+
+#pragma mark - 选择了地址
+- (void)AddressPickerViewSureActionProvince:(AddressModel *)model1 country:(AddressModel *)model2 city:(AddressModel *)model3 {
+    
+    [self closeAddressViewAction];
+    
+    NSString *province_id = @"";
+    NSString *city_id = @"";
+    NSString *country_id = @"";
+    
+    if (model1 != nil && model1.areaid != nil) {
+        province_id = model1.areaid;
+    }
+    
+    if (model2 != nil && model2.areaid != nil) {
+        city_id = model2.areaid;
+    }
+    
+    if (model3 != nil && model3.areaid != nil) {
+        country_id = model3.areaid;
+    }
+    
+    
+    
+//    NSString *method = [NSString stringWithFormat:@"appUser/update_addr"];
+//    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+//                         province_id,@"province_id",
+//                         city_id,@"city_id",
+//                         country_id,@"country_id",
+//                         userInfo.userID,@"user_id",
+//                         nil];
+//
+//    [SVProgressHUD showWithStatus:@"更新地址中"];
+//
+//    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+//
+//        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+//
+//        if ([code isEqualToString:@"200"]) {
+//
+//            NSMutableString *name = [NSMutableString string];
+//            if (model1 != nil && model1.areaName != nil) {
+//                [name appendFormat:@"%@ ", model1.areaName];
+//            }
+//
+//            if (model2 != nil && model2.areaName != nil) {
+//                [name appendFormat:@"%@ ", model2.areaName];
+//            }
+//
+//            if (model3 != nil && model3.areaName != nil) {
+//                [name appendFormat:@"%@", model3.areaName];
+//            }
+//
+//            //主线程更新视图
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                _locationLabel.text = name;
+//
+//            });
+//
+//        } else {
+//
+//            //主线程更新视图
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+//                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+//
+//            });
+//
+//        }
+//
+//
+//
+//        [SVProgressHUD dismiss];
+//    } failure:^(NSError *error) {
+//
+//        //后台连接直接不成功，弹出“连接服务器失败”
+//        [SVProgressHUD dismiss];
+//        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+//        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+//    }];
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

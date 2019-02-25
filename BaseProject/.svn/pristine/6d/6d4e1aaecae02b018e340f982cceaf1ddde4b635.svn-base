@@ -1,0 +1,81 @@
+PODS:
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
+    - AFNetworking/NSURLSession
+  - Masonry (1.1.0)
+  - MJExtension (3.0.13)
+  - MJRefresh (3.1.15.3)
+  - mob_sharesdk (4.1.1):
+    - mob_sharesdk/ShareSDK (= 4.1.1)
+    - MOBFoundation
+  - mob_sharesdk/ShareSDK (4.1.1):
+    - MOBFoundation
+  - mob_sharesdk/ShareSDKConfigFile (4.1.1):
+    - mob_sharesdk/ShareSDK
+    - MOBFoundation
+  - mob_sharesdk/ShareSDKExtension (4.1.1):
+    - mob_sharesdk/ShareSDK
+    - MOBFoundation
+  - mob_sharesdk/ShareSDKPlatforms/QQ (4.1.1):
+    - mob_sharesdk/ShareSDK
+    - MOBFoundation
+  - mob_sharesdk/ShareSDKPlatforms/WeChatFull (4.1.1):
+    - mob_sharesdk/ShareSDK
+    - MOBFoundation
+  - mob_sharesdk/ShareSDKUI (4.1.1):
+    - mob_sharesdk/ShareSDK
+    - MOBFoundation
+  - MOBFoundation (3.1.5)
+  - RongCloudIM/IMKit (2.8.31):
+    - RongCloudIM/IMLib
+  - RongCloudIM/IMLib (2.8.31)
+  - SDAutoLayout (2.2.0)
+  - SDWebImage (4.3.3):
+    - SDWebImage/Core (= 4.3.3)
+  - SDWebImage/Core (4.3.3)
+  - SVProgressHUD (2.2.5)
+
+DEPENDENCIES:
+  - AFNetworking
+  - Masonry
+  - MJExtension
+  - MJRefresh
+  - mob_sharesdk
+  - mob_sharesdk/ShareSDKConfigFile
+  - mob_sharesdk/ShareSDKExtension
+  - mob_sharesdk/ShareSDKPlatforms/QQ
+  - mob_sharesdk/ShareSDKPlatforms/WeChatFull
+  - mob_sharesdk/ShareSDKUI
+  - RongCloudIM/IMKit
+  - RongCloudIM/IMLib
+  - SDAutoLayout
+  - SDWebImage
+  - SVProgressHUD
+
+SPEC CHECKSUMS:
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJExtension: 5932755f451458eefa24239358817f8d291240c7
+  MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
+  mob_sharesdk: 6cb2159a5205d79c0f3e2d5a10ae63362c8e09d3
+  MOBFoundation: d961251ce6de54917f678dc711962d1385ae7ee1
+  RongCloudIM: dbbf0ff365f1627324cfead498136d75c99cbeac
+  SDAutoLayout: c5509e77ae75735d9a39f7bc83dba6d3f75d49d8
+  SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+
+PODFILE CHECKSUM: 03b1b3ad623beb726ce0b4aeb9b0fe66d24222d0
+
+COCOAPODS: 1.4.0

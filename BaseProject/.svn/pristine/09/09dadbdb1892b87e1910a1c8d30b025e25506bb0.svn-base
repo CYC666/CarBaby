@@ -1,0 +1,89 @@
+//
+//  MainTabBarController.m
+//  LFBaseFrameTwo
+//
+//  Created by admin on 16/12/16.
+//  Copyright © 2016年 admin. All rights reserved.
+//
+
+#import "MainTabBarController.h"
+
+@interface MainTabBarController () {
+
+
+
+}
+
+@end
+
+@implementation MainTabBarController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    //设置分页的标签
+    NSArray *titleName = @[@"首页", @"信息",@"商城", @"我的"];
+    
+    //设置
+    for (int i = 0; i < self.viewControllers.count; i++)
+    {
+        
+        UIViewController *vc = self.viewControllers[i];
+        
+        vc.title = titleName[i];
+        vc.tabBarItem.selectedImage = [[UIImage imageNamed:[NSString stringWithFormat:@"partA%d", i]] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        vc.tabBarItem.image = [[UIImage imageNamed:[NSString stringWithFormat:@"partB%d", i]] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        // 图片偏移量:
+        //vc.tabBarItem.imageInsets = UIEdgeInsetsMake(5, 0, 0, 0);
+        
+        // 设置title在选择状态下的颜色:
+        [vc.tabBarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:Publie_Color} forState:UIControlStateSelected];
+        
+        //设置title的偏移量:
+        [vc.tabBarItem setTitlePositionAdjustment:UIOffsetMake(0, -1)];
+        
+    }
+
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

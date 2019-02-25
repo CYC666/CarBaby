@@ -1,0 +1,106 @@
+//
+//  UserInformation.h
+//  YiYanYunGou
+//
+//  Created by admin on 16/3/21.
+//  Copyright © 2016年 admin. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface UserInformation : NSObject
+
+//根据后台的JSON数据设置属性
+
+//UserId，前端唯一标示
+@property (nonatomic) NSString *UserId;
+//id编号
+@property (nonatomic) NSString *EnCode;
+//真实姓名
+@property (nonatomic) NSString *RealName;
+//角色类型（0-个人，10-商户，20-业务员）
+@property (nonatomic) NSString *RoleType;
+//身份证号码
+@property (nonatomic) NSString *IDCard;
+//昵称
+@property (nonatomic) NSString *NickName;
+//头像
+@property (nonatomic) NSString *HeadIcon;
+//性别
+@property (nonatomic) NSString *Gender;
+//生日
+@property (nonatomic) NSString *Birthday;
+//手机号
+@property (nonatomic) NSString *Mobile;
+//邮箱
+@property (nonatomic) NSString *Email;
+//第三方绑定
+@property (nonatomic, copy) NSString *OpenId;  // 微信
+@property (nonatomic, copy) NSString *OpenId2; // QQ
+//现居地址
+//省
+@property (nonatomic) NSString *ProvinceId;
+@property (nonatomic) NSString *ProvinceName;
+//市
+@property (nonatomic) NSString *CityId;
+@property (nonatomic) NSString *CityName;
+//县
+@property (nonatomic) NSString *CountyId;
+@property (nonatomic) NSString *CountyName;
+//详细地址
+@property (nonatomic) NSString *Address;
+
+//商户类型
+@property (nonatomic) NSString *EntryType;
+@property (nonatomic) NSString *EntryTypeName;
+@property (nonatomic) NSString *AnnualFee;  // 商家年费 0表示未交  1表示已交
+
+//用户账户相关信息
+//当前余额
+@property (nonatomic) NSString *Balance;
+//冻结资金
+@property (nonatomic) NSString *Freeze;
+//当前账户积分
+@property (nonatomic) NSString *Integral;
+//累计收益总额
+@property (nonatomic) NSString *IncomeTotal;
+//累计提现总额
+@property (nonatomic) NSString *WithdrawTotal;
+//累计积分总额
+@property (nonatomic) NSString *IntegralTotal;
+//描述
+@property (nonatomic) NSString *Description;
+
+//商户审核状态（0：默认，1：审核中，2：审核通过，-1：审核未通过）
+@property (nonatomic) NSString *AuditMark;
+//有效标志位（0：无效，1-有效）
+@property (nonatomic) NSString *EnabledMark;
+
+//提现密码
+@property (nonatomic) NSString *WithdrawPassword;
+
+//个人消费总额
+@property (nonatomic) NSString *BusinessTotal;
+
+// 银豆
+@property (nonatomic) NSString *SilverBeans;
+
+// 让利比例
+@property (nonatomic) NSString *Commission;
+
+
+
+
+
+
+//单例模式
++ (UserInformation *)sharedInstance;
+
+//清空所有数据，相当于退出账户
+- (void)clearData;
+//判断是否登录
+- (BOOL)isLoginWithUserId;
+
+
+
+@end

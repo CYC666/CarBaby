@@ -1,0 +1,419 @@
+//
+//  RegistController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/20.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "RegistController.h"
+#import "EncryptForInterface.h"
+
+@interface RegistController () <UITextFieldDelegate> {
+    BOOL verificationFlag;
+    NSString *codeStr;
+    dispatch_source_t _timer;
+    UserInformation *userInfo;              // 用户信息单例
+
+}
+
+@end
+
+@implementation RegistController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navBar.title.hidden = YES;
+    userInfo = [UserInformation sharedInstance];
+    
+    [_agreeButton setImage:[UIImage imageNamed:@"组3"] forState:UIControlStateNormal];
+    [_agreeButton setImage:[UIImage imageNamed:@"组3_23"] forState:UIControlStateSelected];
+    
+    _nextButton.layer.borderWidth = 1;
+    _nextButton.layer.borderColor = _nextButton.titleLabel.textColor.CGColor;
+    
+    _codeButton.layer.borderWidth = 1;
+    _codeButton.layer.borderColor = _codeButton.titleLabel.textColor.CGColor;
+    
+    _registButton.layer.borderWidth = 1;
+    _registButton.layer.borderColor = _registButton.titleLabel.textColor.CGColor;
+    
+    _phoneField.delegate = self;
+    _codeField.delegate = self;
+    _passwordField1.delegate = self;
+    _passwordField2.delegate = self;
+    _recommendField.delegate = self;
+    [_phoneField becomeFirstResponder];
+    [_codeButton addTarget:self action:@selector(codeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_nextButton addTarget:self action:@selector(nextButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registButton addTarget:self action:@selector(registButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_agreeButton addTarget:self action:@selector(agreeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_procotolButton addAction:^(NSInteger index) {
+        // 注册协议 CYC666
+        WebForCommonViewController *ctrl = [[WebForCommonViewController alloc] init];
+        ctrl.urlString = @"www.goodo.cn";
+        ctrl.naviTitle = @"用户协议";
+        [self.navigationController pushViewController:ctrl animated:YES];
+        
+    }];
+}
+
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                codeStr = @"验证码失效";
+                
+                verificationFlag = NO;
+                _codeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                //验证码倒计时有效期标志位
+                verificationFlag = YES;
+                
+                //按钮不可点击
+                _codeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 同意协议
+- (void)agreeButtonAction:(UIButton *)button {
+    
+    button.selected = !button.selected;
+    
+}
+
+#pragma mark - 下一步
+- (void)nextButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    // 勾选协议
+    if (!_agreeButton.selected) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"需要同意协议"];
+        return;
+    }
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    if ([_codeField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    if(![codeStr isEqualToString:_codeField.text]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码不正确"];
+        return;
+    }
+    
+    [UIView animateWithDuration:.35 animations:^{
+        _view2.transform = CGAffineTransformMakeTranslation(-kScreenWidth, 0);
+    }];
+    
+}
+
+#pragma mark - 获取验证码
+- (void)codeButtonAction:(UIButton *)button {
+    
+    [_codeField becomeFirstResponder];
+    
+    //校验手机号码
+    if (![SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    
+    
+    NSString *method = [NSString stringWithFormat:@"GetMobileCode"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         _phoneField.text,@"Mobile",
+                         @"用户注册",@"Title",
+                         nil];
+    
+    //GetMobileCode
+    //[88]系统 =>手机验证码(输入参数string Json)
+    //Mobile:手机号码
+    //Title:发送类别(用户注册、密码找回、绑定手机、更换前手机、更换后手机)
+    
+    
+    button.userInteractionEnabled = NO;
+    [SVProgressHUD showWithStatus:@"获取验证码中"];
+    
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@", responseObject[@"Code"]];
+        if ([code isEqualToString:@"200"]) {
+            
+            codeStr = [NSString stringWithFormat:@"%@", responseObject[@"Data"][@"Code"]];
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [self codeButtonActive];
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"已发送验证码"];
+                
+            });
+            
+        } else {
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                
+            });
+            
+        }
+        
+        
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+    
+}
+
+#pragma mark - 执行注册
+- (void)registButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+
+    
+    //登录密码text校验
+    NSString *checkPasswordStr = [SmallFunctionTool checkOutPasswordText:_passwordField1.text withTextName:@"密码"];
+    if (checkPasswordStr != nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:checkPasswordStr];
+        return;
+    }
+    
+    
+    NSString *RecommendEnCode = _recommendField.text;
+    if ([RecommendEnCode isEqualToString:@""]) {
+        RecommendEnCode = @"default";
+    }
+    
+    
+    
+    NSString *method = [NSString stringWithFormat:@"Registered"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         @"Mobile",@"RegisterMark",
+                         @"Ios",@"RegisterType",
+                         _phoneField.text,@"Account",
+                         _passwordField1.text,@"Password",
+                         @"default",@"OpenId",
+                         RecommendEnCode,@"RecommendEnCode",
+                         @"0",@"RoleType",
+                         nil];
+    
+    
+    //Registered
+    //[1]用户 => 用户注册(输入参数string Json)
+    //RegisterMark:注册方式(Mobile、Email、QQ、WeChat、Alipay)
+    //RegisterType:注册类型(Web、Android、Ios、Pc)
+    //Account：登录账户(说明：根据注册方式取对应值)
+    //Password:登录密码(说明：快捷注册为default)
+    //OpenId:第三方快捷返回值
+    //RecommendEnCode:推荐人用户ID(默认传default)
+    //RoleType:角色类型(0-普通会员、其他类型请参考数据结构)
+    
+    [SVProgressHUD showWithStatus:@"注册中"];
+    button.userInteractionEnabled = NO;
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+
+            
+            NSString *userID = [NSString stringWithFormat:@"%@", responseObject[@"Data"][@"UserId"]];
+            
+            // 注册成功，登录
+            NSString *method1 = [NSString stringWithFormat:@"GetEntityUser"];
+            NSDictionary *dic1 = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  userID,@"UserId",
+                                  nil];
+            
+            //GetEntityUser
+            //[5]用户 => 获取用户实体(输入参数string Json)
+            //UserId:用户编号
+            
+            [SOAPUrlSession SOAPDataWithMethod:method1 parameter:dic1 success:^(id responseObject) {
+                
+                NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+                
+                if ([code isEqualToString:@"200"]) {
+                    
+                    userInfo = [UserInformation mj_objectWithKeyValues:responseObject[@"Data"]];
+                    
+                    //7天内记住用户登录状态，将时间和useId存入NSUserDefaults
+                    {
+                        //获取当前时间
+                        NSString *nowTime = [SmallFunctionTool transitionDateToString:[NSDate date]];
+                        //加密userId
+                        NSString *encryptStr = [EncryptForInterface encryptWithText:userID];
+                        
+                        //存入NSUserDefaults文件中
+                        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                        [userDefaults setObject:nowTime forKey:@"LoginDate"];
+                        [userDefaults setObject:encryptStr forKey:@"LoginUserId"];
+                        [userDefaults synchronize]; //立即同步
+                    }
+                    
+                    // 登陆成功
+                    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+                } else {
+                    
+                    // 登录失败
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                        [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                        
+                    });
+                }
+                
+            } failure:^(NSError *error) {
+                
+                //后台连接直接不成功，弹出“连接服务器失败”
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+            }];
+            
+        } else {
+            
+            // 注册失败
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                
+            });
+            
+        }
+        
+        [SVProgressHUD dismiss];
+        button.userInteractionEnabled = YES;
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        button.userInteractionEnabled = YES;
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        [SVProgressHUD dismiss];
+    }];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if ([textField isEqual:_phoneField]) {
+        [self codeButtonAction:nil];
+    } else if ([textField isEqual:_codeField]) {
+        [self nextButtonAction:nil];
+    } else if ([textField isEqual:_passwordField1]) {
+        [_passwordField2 becomeFirstResponder];
+    } else if ([textField isEqual:_passwordField2]) {
+        [self registButtonAction:nil];
+    }
+    
+    return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

@@ -1,0 +1,273 @@
+//
+//  SettingController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/7.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SettingController.h"
+#import "LoginController.h"
+#import "CYCnavController.h"
+
+@interface SettingController ()
+
+@end
+
+@implementation SettingController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"设置";
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    
+    // 当前版本号
+    NSString *app_Version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    _versionLabel.text = [NSString stringWithFormat:@"v%@", app_Version];
+    
+    
+    [_aboutButton addTarget:self action:@selector(aboutAction) forControlEvents:UIControlEventTouchUpInside];
+    [_outButton addTarget:self action:@selector(outAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_updateButton addAction:^(NSInteger index) {
+        // 自动升级 检测更新
+        [self appUpdate];
+        
+    }];
+    
+    [_helpButton addAction:^(NSInteger index) {
+        // 帮助
+        WebForCommonViewController *ctrl = [[WebForCommonViewController alloc] init];
+        ctrl.urlString = [NSString stringWithFormat:@"%@/news/AppReplicate/17051b3a-a08e-4ba9-8553-b0b9cad0ffba", H5_URL];
+        ctrl.naviTitle = @"使用帮助";
+        [self.navigationController pushViewController:ctrl animated:YES];
+    }];
+    
+}
+
+
+#pragma mark - 关于我们
+- (void)aboutAction {
+    
+    WebForCommonViewController *ctrl = [[WebForCommonViewController alloc] init];
+    ctrl.urlString = [NSString stringWithFormat:@"%@/news/AppSynopsis/c4bef658-9216-47b5-9519-d0e295f5775e", H5_URL];
+    ctrl.naviTitle = @"关于我们";
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+    
+    
+}
+
+
+#pragma mark - 退出登录
+- (void)outAction {
+    
+    
+    // 弹框提示是否执行
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:@"确定要退出登录？"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * _Nonnull action) {
+                                                
+                                            }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * _Nonnull action) {
+                                                
+                                                [[UserInformation sharedInstance] clearData];
+                                                
+                                                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                                                [userDefaults removeObjectForKey:@"LoginDate"];
+                                                [userDefaults removeObjectForKey:@"LoginUserId"];
+                                                [userDefaults removeObjectForKey:@"PassWord"];
+                                                [userDefaults synchronize]; //立即同步
+                                                
+                                                
+                                                CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+                                                [self presentViewController:nav animated:YES completion:^{
+                                                    [self.navigationController popViewControllerAnimated:NO];
+                                                }];
+                                                
+                                            }]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
+    
+    
+    
+}
+
+
+
+
+
+#pragma mark - 版本更新
+- (void)appUpdate {
+    NSString *method = [NSString stringWithFormat:@"GetAppVersion"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         @"苹果",@"Action",   //版本类型(安卓、苹果)
+                         nil];
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //-------------------------------更新数据源-------------------------------
+        NSDictionary *responseDic = responseObject;
+        NSLog(@"GetAppVersion%@ ----- %@",responseDic[@"Code"],responseDic[@"Message"]);
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            //操作成功，接口封装返回的数据对象
+            NSDictionary *dataDic = responseObject[@"Data"];
+            
+            
+            //判断版本信息  目前"ItemName":"v1.0.0"
+            NSString *versionName = dataDic[@"ItemName"];
+            //                versionName=@"v1.0.0";//测试
+            //app版本号
+            NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+            NSString *app_Version = [NSString stringWithFormat:@"v%@",[infoDictionary objectForKey:@"CFBundleShortVersionString"]];
+            
+            //判断版本号比当前的版本是否高，高的话就给YES，相同或者低就给NO
+            if ([versionName isEqualToString:app_Version] || versionName == nil) {
+                
+            } else {
+                //拆分成三段
+                NSString *backendVersion = [versionName substringFromIndex:1];
+                NSArray *backendArr = [backendVersion componentsSeparatedByString:@"."];
+                
+                NSString *frontendVersion = [app_Version substringFromIndex:1];
+                NSArray *frontendArr = [frontendVersion componentsSeparatedByString:@"."];
+                
+                if ([backendArr[0] integerValue] > [frontendArr[0] integerValue]) {
+                    
+                    //主线程更新视图
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        // 提示更新
+                        [self chackAppUpdate:versionName message:dataDic[@"Description"] versionUrl:dataDic[@"ItemValue"]];
+                        
+                    });
+                    
+                } else if ([backendArr[0] integerValue] == [frontendArr[0] integerValue]) {
+                    if ([backendArr[1] integerValue] > [frontendArr[1] integerValue]) {
+                        
+                        //主线程更新视图
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // 提示更新
+                            [self chackAppUpdate:versionName message:dataDic[@"Description"] versionUrl:dataDic[@"ItemValue"]];
+                            
+                        });
+                        
+                    } else if ([backendArr[1] integerValue] == [frontendArr[1] integerValue]) {
+                        if ([backendArr[2] integerValue] > [frontendArr[2] integerValue]) {
+                            
+                            //主线程更新视图
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                
+                                // 提示更新
+                                [self chackAppUpdate:versionName message:dataDic[@"Description"] versionUrl:dataDic[@"ItemValue"]];
+                                
+                            });
+                            
+                        }
+                    }
+                }
+            }
+        } else {
+            NSLog(@"获取当前版本信息失败");
+        }
+        
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
+#pragma mark - 提示更新
+- (void)chackAppUpdate:(NSString *)versionNumber message:(NSString *)message versionUrl:(NSString *)versionUrl {
+    
+    
+    //弹窗提示，默认使用强制更新
+    NSString *titleStr = [NSString stringWithFormat:@"版本更新（%@）",versionNumber];
+    NSString *messageStr = [NSString stringWithFormat:@"更新内容：\n%@",message];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:titleStr message:messageStr preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *defaultButton = [UIAlertAction actionWithTitle:@"更新" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        NSURL *iTunesURL = [NSURL URLWithString:versionUrl];
+        [[UIApplication sharedApplication] openURL:iTunesURL];
+    }];
+    //使用富文本修改title和message的字体和颜色
+    NSMutableAttributedString *alertTitleStr = [[NSMutableAttributedString alloc] initWithString:titleStr];
+    [alertTitleStr addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, titleStr.length)];
+    [alertTitleStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:18] range:NSMakeRange(0, 4)];
+    [alertTitleStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15] range:NSMakeRange(4, titleStr.length-4)];
+    [alert setValue:alertTitleStr forKey:@"attributedTitle"];
+    
+    //富文本设置文本左对齐
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setAlignment:NSTextAlignmentLeft];
+    NSDictionary *attribs = @{NSParagraphStyleAttributeName:paragraphStyle};
+    NSMutableAttributedString *alertMessageStr = [[NSMutableAttributedString alloc] initWithString:messageStr attributes:attribs];
+    [alertMessageStr addAttribute:NSForegroundColorAttributeName value:[UIColor darkGrayColor] range:NSMakeRange(0, messageStr.length)];
+    [alertMessageStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15] range:NSMakeRange(0, messageStr.length)];
+    [alert setValue:alertMessageStr forKey:@"attributedMessage"];
+    
+    //使用runtime属性，修改默认的系统提示窗的字体(只支持8.4以上版本)
+    CGFloat iOSVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+    [alert addAction:defaultButton];
+    UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    [alert addAction:cancelButton];
+    if (iOSVersion >=8.4) {
+        [defaultButton setValue:[UIColor colorWithRed:18.0/255.0f green:183.0/255.0f blue:245.0/255.0f alpha:1.0f] forKey:@"_titleTextColor"];
+        [cancelButton setValue:[UIColor colorWithRed:240.0/255.0f green:80.0/255.0f blue:80.0/255.0f alpha:1.0f] forKey:@"_titleTextColor"];
+    }
+    [self presentViewController:alert animated:YES completion:nil];
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

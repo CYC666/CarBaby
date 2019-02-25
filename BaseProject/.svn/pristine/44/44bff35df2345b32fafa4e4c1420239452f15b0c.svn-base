@@ -1,0 +1,20 @@
+//
+//  SortClassModel.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SortClassModel.h"
+
+@implementation SortClassModel
+
++ (NSDictionary *)objectClassInArray
+{
+    return @{
+             @"ChirldData" : @"SortClassModel"
+             };
+}
+
+@end

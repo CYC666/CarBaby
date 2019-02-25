@@ -1,0 +1,275 @@
+//
+//  MainListController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/20.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "MainListController.h"
+#import "MainListCell.h"
+#import "SDCycleScrollView.h"
+#import "NewsListModel.h"
+
+@interface MainListController () <UITableViewDelegate, UITableViewDataSource> {
+    
+    NSInteger currentPage;
+    NSMutableArray *dataArray;   // 数据列表
+    
+}
+
+@property (strong, nonatomic) UITableView *listTableView;
+@property (strong, nonatomic) SDCycleScrollView *bannerView;
+
+@end
+
+@implementation MainListController
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = Background_Color;
+    dataArray = [NSMutableArray array];
+    
+    // 创建视图
+    [self creatSubViewsAction];
+    
+    
+    
+}
+
+
+#pragma mark ========================================私有方法=============================================
+
+#pragma mark - 创建视图
+- (void)creatSubViewsAction {
+    
+    // 头视图
+    _bannerView = [[SDCycleScrollView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenWidth * 0.5)];
+    
+    NSArray *images = @[@"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1532685258546&di=b1b7a68372521faa21712e5bf1447728&imgtype=0&src=http%3A%2F%2Fpic.meirishentie.com%2Fpicture%2F10057%2F100571350%2Fmedium%2F100571350.gif",
+                        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1532685294680&di=e340f75857027b78edbdf4b832f8ac60&imgtype=0&src=http%3A%2F%2Fimage07.71.net%2Fimage07%2F83%2F74%2F87%2F61%2Fa8f85c57-20ad-49d9-bc02-b1fcf25ade65.jpg",
+                        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1532684673822&di=4ffb4570633f7ee5ff8bd34328962b1f&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F011bc95a1e1879a80120908dc24ba7.jpg%401280w_1l_2o_100sh.jpg"];
+    NSArray *imageTitles = @[@"我的天", @"Tina 啦噜", @"撸啊撸啊"];
+    
+    _bannerView.imageURLStringsGroup = images;
+    _bannerView.titlesGroup = imageTitles;
+    _bannerView.showPageView = NO;
+    _bannerView.autoScrollTimeInterval = 5;
+    _bannerView.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
+    
+    
+    
+    // 表视图
+    _listTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight - Nav_Height - 50 - TabBar_Height)
+                                                  style:UITableViewStylePlain];
+    _listTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _listTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    _listTableView.backgroundColor = [UIColor clearColor];
+    _listTableView.tableHeaderView = _bannerView;
+    _listTableView.delegate = self;
+    _listTableView.dataSource = self;
+    [_listTableView registerNib:[UINib nibWithNibName:@"MainListCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MainListCell"];
+    [self.view addSubview:_listTableView];
+    
+    if(@available(iOS 11.0, *)){
+        _listTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    
+    _listTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        
+        [self loadListAction:NO];
+        
+        //关闭刷新
+        [_listTableView.mj_header endRefreshing];
+    }];
+    
+    
+    _listTableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        
+        [self loadListAction:YES];
+        
+        //关闭刷新
+        [_listTableView.mj_footer endRefreshing];
+    }];
+    
+}
+
+- (void)setCategoryID:(NSString *)categoryID {
+    _categoryID = categoryID;
+    [self loadListAction:0];
+}
+
+#pragma mark ========================================动作响应=============================================
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark - 获取资讯列表
+- (void)loadListAction:(BOOL)isfooter {
+    
+    if (isfooter) {
+        currentPage ++;
+    } else {
+        currentPage = 1;
+        [dataArray removeAllObjects];
+    }
+    
+    if (![UserInformation sharedInstance].isLoginWithUserId) {
+        return;
+    }
+    
+    NSString *PageIndex =[NSString stringWithFormat:@"%ld", currentPage];
+ 
+    
+    NSString *method = [NSString stringWithFormat:@"GetInformationPageList"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         @"20",@"PageSize",
+                         PageIndex,@"PageIndex",
+                         _categoryID,@"Category",
+                         @"default",@"Keyword",
+                         nil];
+    
+    //GetInformationPageList
+    //[100]资讯 =>获取资讯列表(输入参数string Json)
+    //PageSize:每页数
+    //PageIndex:当前页
+    //UserId:用户主键(默认default)
+    //Category：资讯类型主键(默认default)
+    //Keyword:关键字(默认default)
+    //----------------返回字段说明------------------
+    //NewsId：资讯主键
+    //Category:所属类别主键
+    //CreateDate：创建时间
+    //FullHead：标题
+    //FilePath：标题图
+    //IsCollect：是否收藏(大于0视为已收藏)
+    //EvaluationCount:评论数
+    
+    //发送soap请求
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            
+            NSArray *list = responseObject[@"Data"][@"rows"];
+            for (NSDictionary *dic in list) {
+                NewsListModel *model = [NewsListModel mj_objectWithKeyValues:dic];
+                [dataArray addObject:model];
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [_listTableView reloadData];
+                
+            });
+            
+            
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:responseObject[@"Message"]];
+                
+            });
+            
+        }
+    } failure:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        });
+        
+    }];
+    
+}
+
+
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark - 表视图代理方法
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+    
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return dataArray.count;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return 90;
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    
+    return 0.01;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    return 0.01;
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    MainListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MainListCell" forIndexPath:indexPath];
+    
+    if (indexPath.row < dataArray.count) {
+        NewsListModel *model = dataArray[indexPath.row];
+        
+        // 图片
+        NSString *path = [NSString stringWithFormat:@"%@%@", Image_Base_URL, model.filepath];
+        [cell.icon sd_setImageWithURL:[NSURL URLWithString:path]
+                              placeholderImage:[UIImage imageNamed:@"loadfail-0"]
+                                       options:SDWebImageRetryFailed];
+        cell.label1.text = model.fullhead;
+        cell.label2.text = model.createdate;
+        cell.label3.text = [NSString stringWithFormat:@"评论:%@", model.evaluationcount];
+        
+        if (model.iscollect.integerValue > 0) {
+            [cell.followButton setImage:[UIImage imageNamed:@"已收藏"] forState:UIControlStateNormal];
+        } else {
+            [cell.followButton setImage:[UIImage imageNamed:@"收藏"] forState:UIControlStateNormal];
+        }
+        
+    }
+    
+    
+    return cell;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+}
+
+
+#pragma mark ========================================通知================================================
+
+
+
+
+
+@end

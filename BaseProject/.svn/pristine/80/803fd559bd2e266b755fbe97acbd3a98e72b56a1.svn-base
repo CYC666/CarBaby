@@ -1,0 +1,13 @@
+//
+//  SearchCoinController.h
+//  BaseProject
+//
+//  Created by KOK on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface SearchCoinController : UIViewController
+
+@end

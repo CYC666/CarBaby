@@ -1,0 +1,338 @@
+//
+//  LoginController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/22.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "LoginController.h"
+#import "ForgetPasswordController.h"
+
+@interface LoginController () <UIScrollViewDelegate, UITextFieldDelegate> {
+    
+    CGFloat startY;             // 滑动视图开始滑动时的偏移
+    BOOL verificationFlag;
+    NSString *code;
+    dispatch_source_t _timer;
+    
+}
+
+@end
+
+@implementation LoginController
+
+
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    //  把假的导航栏去掉
+    self.navBar.hidden = YES;
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    _registCodeButton.layer.borderWidth = 1;
+    _registCodeButton.layer.borderColor = _registCodeButton.titleLabel.textColor.CGColor;
+    
+    [_registAgreeButton setImage:[UIImage imageNamed:@"未选中"] forState:UIControlStateNormal];
+    [_registAgreeButton setImage:[UIImage imageNamed:@"选中"] forState:UIControlStateSelected];
+    
+    _mainView.delegate = self;
+    _loginPhoneField.delegate = self;
+    _loginPasswordField.delegate = self;
+    _registPhoneField.delegate = self;
+    _registCodeField.delegate = self;
+    _registPasswordField.delegate = self;
+    _registRecommentField.delegate = self;
+    [_loginButton addTarget:self action:@selector(changeLoginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registButton addTarget:self action:@selector(changeRegistButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_loginForgetButton addTarget:self action:@selector(forgetPasswordButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_logionActionButton addTarget:self action:@selector(loginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registActionButton addTarget:self action:@selector(registButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registAgreeButton addTarget:self action:@selector(registAgreeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registCodeButton addTarget:self action:@selector(codeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+}
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_registCodeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                code = @"验证码失效";
+                
+                verificationFlag = NO;
+                _registCodeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_registCodeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                //验证码倒计时有效期标志位
+                verificationFlag = YES;
+                
+                //按钮不可点击
+                _registCodeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 退出登录界面
+- (void)exitAction {
+    
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    
+}
+
+#pragma mark - 切换到登录
+- (void)changeLoginButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    [UIView animateWithDuration:.35 animations:^{
+        _loginView.transform = CGAffineTransformMakeTranslation(0, 0);
+        _registView.transform = CGAffineTransformMakeTranslation(0, 0);
+        _flowView.transform = CGAffineTransformMakeTranslation(0, 0);
+    } completion:^(BOOL finished) {
+        [_loginButton setTitleColor:Publie_Color forState:UIControlStateNormal];
+        [_registButton setTitleColor:Label_Color_A forState:UIControlStateNormal];
+    }];
+    
+}
+
+#pragma mark - 切换到注册
+- (void)changeRegistButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    [UIView animateWithDuration:.35 animations:^{
+        _loginView.transform = CGAffineTransformMakeTranslation(-kScreenWidth, 0);
+        _registView.transform = CGAffineTransformMakeTranslation(-kScreenWidth, 0);
+        _flowView.transform = CGAffineTransformMakeTranslation(100, 0);
+    } completion:^(BOOL finished) {
+        [_loginButton setTitleColor:Label_Color_A forState:UIControlStateNormal];
+        [_registButton setTitleColor:Publie_Color forState:UIControlStateNormal];
+    }];
+    
+}
+
+#pragma mark - 忘记密码
+- (void)forgetPasswordButtonAction:(UIButton *)button {
+    
+    ForgetPasswordController *ctrl = [[ForgetPasswordController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+#pragma mark - 同意协议
+- (void)registAgreeButtonAction:(UIButton *)button {
+    
+    button.selected = !button.selected;
+    
+}
+
+#pragma mark - 执行登录
+- (void)loginButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    [SVProgressHUD showWithStatus:@"登录中"];
+    [SVProgressHUD dismissWithDelay:3];
+    
+    if ([_loginPhoneField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入手机号码"];
+        return;
+    }
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_loginPhoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    //登录密码text校验
+    if ([_loginPasswordField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入登录密码"];
+        return;
+    }
+
+    
+    
+    
+}
+
+#pragma mark - 获取验证码
+- (void)codeButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_loginPhoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    [self codeButtonActive];
+    
+}
+
+#pragma mark - 执行注册
+- (void)registButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    [SVProgressHUD showWithStatus:@"注册中"];
+    [SVProgressHUD dismissWithDelay:2];
+    
+    // 勾选协议
+    if (!_registAgreeButton.selected) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"需要同意协议"];
+        return;
+    }
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_loginPhoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    if ([code isEqualToString:@""] || code == nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    if([code isEqualToString:@"验证码失效"]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码失效"];
+        return;
+    }
+
+    //登录密码text校验
+    NSString *checkPasswordStr = [SmallFunctionTool checkOutPasswordText:_registPasswordField.text withTextName:@"密码"];
+    if (checkPasswordStr != nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:checkPasswordStr];
+        return;
+    }
+    
+    
+    //判断短信验证码是否一致
+    if (![_registCodeField.text isEqualToString:code]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码错误，请重新输入"];
+        return;
+    }
+    
+    
+}
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark - 向下滑动隐藏键盘
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    startY = scrollView.mj_offsetY;
+}
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    CGFloat scrollY = scrollView.mj_offsetY;
+    if (scrollY < startY) {
+        [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    }
+    
+    
+}
+
+#pragma mark - 回车自动跳转下一个
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+
+    if ([textField isEqual:_loginPhoneField]) {
+        [_loginPasswordField becomeFirstResponder];
+    } else if ([textField isEqual:_loginPasswordField]) {
+        [self loginButtonAction:nil];
+    } else if ([textField isEqual:_registPhoneField]) {
+        [_registCodeField becomeFirstResponder];
+    } else if ([textField isEqual:_registCodeField]) {
+        [_registPasswordField becomeFirstResponder];
+    } else if ([textField isEqual:_registPasswordField]) {
+        [_registRecommentField becomeFirstResponder];
+    } else if ([textField isEqual:_registRecommentField]) {
+        [self registButtonAction:nil];
+    }
+    
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

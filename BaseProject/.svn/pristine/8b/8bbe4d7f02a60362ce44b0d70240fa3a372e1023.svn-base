@@ -1,0 +1,211 @@
+//
+//  Login2Controller.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/20.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "Login2Controller.h"
+#import "EncryptForInterface.h"
+#import "RegistController.h"
+#import "ForgetPasswordController.h"
+
+@interface Login2Controller () <UITextFieldDelegate> {
+    
+    UserInformation *userInfo;              // 用户信息单例
+
+    
+}
+
+@end
+
+@implementation Login2Controller
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navBar.title.hidden = YES;
+    userInfo = [UserInformation sharedInstance];
+
+    _logionButton.layer.borderWidth = 1;
+    _logionButton.layer.borderColor = _logionButton.titleLabel.textColor.CGColor;
+    
+    _phoneField.delegate = self;
+    _passwordField.delegate = self;
+    [_logionButton addTarget:self action:@selector(loginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registButton addTarget:self action:@selector(registButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_forgetButton addTarget:self action:@selector(forgetButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+}
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+#pragma mark - 执行登录
+- (void)loginButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    if ([_phoneField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入手机号码"];
+        return;
+    }
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    //登录密码text校验
+    if ([_passwordField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入登录密码"];
+        return;
+    }
+    
+    NSString *method = [NSString stringWithFormat:@"Registered"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         _phoneField.text,@"username",
+                         _passwordField.text,@"password",
+                         nil];
+    
+    //Registered
+    //[1]用户 => 用户注册(输入参数string Json)
+    //RegisterMark:注册方式(Mobile、Email、QQ、WeChat、Alipay)
+    //RegisterType:注册类型(Web、Android、Ios、Pc)
+    //Account：登录账户(说明：根据注册方式取对应值)
+    //Password:登录密码(说明：快捷注册为default)
+    //OpenId:第三方快捷返回值
+    //RecommendEnCode:推荐人用户ID(默认传default)
+    //RoleType:角色类型(0-普通会员、其他类型请参考数据结构)
+    
+    [SVProgressHUD showWithStatus:@"登录中"];
+    
+    //发送soap请求
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            userInfo = [UserInformation mj_objectWithKeyValues:responseObject[@"data"][@"user"]];
+            
+            //7天内记住用户登录状态，将时间和useId存入NSUserDefaults
+            {
+                //获取当前时间
+                NSString *nowTime = [SmallFunctionTool transitionDateToString:[NSDate date]];
+                //加密userId
+                NSString *encryptStr = [EncryptForInterface encryptWithText:_phoneField.text];
+                NSString *PassWord = [EncryptForInterface encryptWithText:_passwordField.text];
+                
+                //存入NSUserDefaults文件中
+                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                [userDefaults setObject:nowTime forKey:@"LoginDate"];
+                [userDefaults setObject:encryptStr forKey:@"LoginUserId"];
+                [userDefaults setObject:PassWord forKey:@"PassWord"];
+                [userDefaults synchronize]; //立即同步
+            }
+            
+            // 登陆成功
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            
+        } else {
+            
+            // 登录失败
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+                
+            });
+        }
+        
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+    
+}
+
+#pragma mark - 忘记密码
+- (void)forgetButtonAction:(UIButton *)button {
+    
+    ForgetPasswordController *ctrl = [[ForgetPasswordController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+#pragma mark - 注册
+- (void)registButtonAction:(UIButton *)button {
+    
+    RegistController *ctrl = [[RegistController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if ([textField isEqual:_phoneField]) {
+        [_passwordField becomeFirstResponder];
+    } else {
+        [self loginButtonAction:nil];
+    }
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

@@ -1,0 +1,169 @@
+//
+//  SortDrowDownView.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SortDrowDownView.h"
+@interface SortDrowDownView()
+
+/**
+ *  下拉菜单蒙版
+ */
+@property (nonatomic, strong) KKCover *coverView;
+
+@property (nonatomic, strong) SortContentView *contentView;
+
+@end
+
+@implementation SortDrowDownView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
+        self.trafficIndex = 100;
+        //self.contentView.backgroundColor = [UIColor redColor];
+    }
+    return self;
+}
+
+
+- (SortContentView *)contentView
+{
+    if (_contentView == nil) {
+        _contentView = [[[NSBundle mainBundle] loadNibNamed:@"SortDrowDownView" owner:nil options:nil] firstObject];
+       // _contentView.backgroundColor = [UIColor randomColor];
+        _contentView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 0);
+        _contentView.clipsToBounds = YES;
+        [_contentView.button1 addTarget:self action:@selector(selectAction:) forControlEvents:UIControlEventTouchUpInside];
+        [_contentView.button2 addTarget:self action:@selector(selectAction:) forControlEvents:UIControlEventTouchUpInside];
+        [_contentView.button3 addTarget:self action:@selector(selectAction:) forControlEvents:UIControlEventTouchUpInside];
+        [self.coverView addSubview:_contentView];
+    }
+    return _contentView;
+    
+}
+
+
+- (UIView *)coverView
+{
+    if (_coverView == nil) {
+        
+        // 设置蒙版的frame
+        CGFloat coverX = 0;
+        CGFloat coverY = 0;//CGRectGetMaxY(self.frame);
+        CGFloat coverW = self.frame.size.width;
+        CGFloat coverH = self.superview.bounds.size.height;// - coverY
+        _coverView = [[KKCover alloc] initWithFrame:CGRectMake(coverX, coverY, coverW, coverH)];
+        _coverView.backgroundColor = [Label_Color_C colorWithAlphaComponent:0.4];
+        [self.superview addSubview:_coverView];
+        [_coverView addTarget:self action:@selector(sortHide) forControlEvents:UIControlEventTouchUpInside];
+        // Cover 的 Block
+        __weak typeof(self) weakSelf = self;
+        _coverView.clickCover = ^{ // 点击蒙版调用
+            [weakSelf sortHide];
+        };
+    }
+    return _coverView;
+}
+
+- (void)selectAction:(UIButton *)sender
+{
+    if (sender.selected) {
+        //return;
+    }
+    self.contentView.button1.selected = NO;
+    self.contentView.button2.selected = NO;
+    self.contentView.button3.selected = NO;
+    
+    sender.selected = YES;
+    
+    self.contentView.label1.textColor = Label_Color_A;
+    self.contentView.label2.textColor = Label_Color_A;
+    self.contentView.label3.textColor = Label_Color_A;
+    if (sender.tag == 0) {
+        self.contentView.label1.textColor = [UIColor redColor];
+    }else if (sender.tag == 1) {
+        self.contentView.label2.textColor = [UIColor redColor];
+    }else{
+        self.contentView.label3.textColor = [UIColor redColor];
+    }
+    _trafficIndex = sender.tag + 1;
+    if (_selectBlock) {
+        _selectBlock(sender.tag);
+    }
+    [self sortHide];
+    
+}
+
+
+
+- (void)sortShowBesideView:(UIView *)atView
+{
+    if (_isShow) {
+        [self sortHide];
+        return;
+    }
+    self.coverView.jk_top = atView.jk_bottom;
+    [self sortShow];
+}
+
+- (void)sortShow
+{
+    self.coverView.hidden = NO;
+    // 设置内容的高度
+    CGFloat height = 150;
+    _isShow = YES;
+    [UIView animateWithDuration:0.25 animations:^{
+        
+        CGRect frame = self.frame;
+        frame.size.height = height;
+        self.contentView.frame = frame;
+    }];
+}
+
+- (void)sortHide
+{
+    // 移除蒙版
+    self.coverView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
+    _isShow = NO;
+    [UIView animateWithDuration:0.25 animations:^{
+        
+        CGRect frame = self.frame;
+        frame.size.height = 0;
+        self.contentView.frame = frame;
+        
+    } completion:^(BOOL finished) {
+        
+        self.coverView.hidden = YES;
+        
+        self.coverView.backgroundColor = [Label_Color_C colorWithAlphaComponent:0.4];
+        
+    }];
+}
+
+@end
+
+@implementation SortContentView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+}
+
+
+@end
+
+@implementation KKCover
+
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if (_clickCover) {
+        _clickCover();
+    }
+}
+
+@end

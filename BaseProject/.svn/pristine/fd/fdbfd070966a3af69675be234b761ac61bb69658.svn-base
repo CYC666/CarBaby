@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="94p-vy-LD1" customClass="ContractwoView">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="160"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="背景板" translatesAutoresizingMaskIntoConstraints="NO" id="YVl-M3-2Ar">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="160"/>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4al-BF-MpK">
+                    <rect key="frame" x="140" y="0.0" width="140" height="155"/>
+                </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="相册" translatesAutoresizingMaskIntoConstraints="NO" id="3oo-Tc-kdz">
+                    <rect key="frame" x="175" y="30" width="70" height="70"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="70" id="0n2-8O-FL9"/>
+                        <constraint firstAttribute="width" constant="70" id="XIb-pK-5M2"/>
+                    </constraints>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r81-eH-lad">
+                    <rect key="frame" x="0.0" y="0.0" width="140" height="155"/>
+                </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="拍照" translatesAutoresizingMaskIntoConstraints="NO" id="orY-9l-TL2">
+                    <rect key="frame" x="35.5" y="30" width="70" height="70"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="70" id="doy-N9-73h"/>
+                        <constraint firstAttribute="height" constant="70" id="lIn-bI-V6v"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="拍照" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6gO-ZL-Rhx">
+                    <rect key="frame" x="52.5" y="112" width="35" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.19607843137254902" green="0.19607843137254902" blue="0.19607843137254902" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="相册" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3fH-sN-Cuu">
+                    <rect key="frame" x="193" y="112" width="35" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.1960784314" green="0.1960784314" blue="0.1960784314" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="orY-9l-TL2" firstAttribute="centerX" secondItem="r81-eH-lad" secondAttribute="centerX" id="5tP-Ge-tpr"/>
+                <constraint firstItem="3oo-Tc-kdz" firstAttribute="centerX" secondItem="4al-BF-MpK" secondAttribute="centerX" id="84F-QZ-bBw"/>
+                <constraint firstItem="4al-BF-MpK" firstAttribute="top" secondItem="94p-vy-LD1" secondAttribute="top" id="BeZ-kV-dz2"/>
+                <constraint firstAttribute="bottom" secondItem="r81-eH-lad" secondAttribute="bottom" constant="5" id="Bgv-9c-eMK"/>
+                <constraint firstItem="6gO-ZL-Rhx" firstAttribute="centerX" secondItem="orY-9l-TL2" secondAttribute="centerX" id="BpQ-cG-Ou7"/>
+                <constraint firstItem="6gO-ZL-Rhx" firstAttribute="top" secondItem="orY-9l-TL2" secondAttribute="bottom" constant="12" id="DOW-eP-7gQ"/>
+                <constraint firstAttribute="bottom" secondItem="4al-BF-MpK" secondAttribute="bottom" constant="5" id="Des-tW-FEi"/>
+                <constraint firstItem="r81-eH-lad" firstAttribute="top" secondItem="94p-vy-LD1" secondAttribute="top" id="EPb-hG-bz4"/>
+                <constraint firstItem="3fH-sN-Cuu" firstAttribute="centerX" secondItem="3oo-Tc-kdz" secondAttribute="centerX" id="Kjk-sf-3VK"/>
+                <constraint firstItem="4al-BF-MpK" firstAttribute="leading" secondItem="r81-eH-lad" secondAttribute="trailing" id="UHe-TC-Dhz"/>
+                <constraint firstAttribute="trailing" secondItem="YVl-M3-2Ar" secondAttribute="trailing" id="W2u-Kh-1qZ"/>
+                <constraint firstItem="3oo-Tc-kdz" firstAttribute="centerY" secondItem="orY-9l-TL2" secondAttribute="centerY" id="Wpj-a9-zhy"/>
+                <constraint firstAttribute="bottom" secondItem="YVl-M3-2Ar" secondAttribute="bottom" id="ZOS-wO-Ve0"/>
+                <constraint firstAttribute="trailing" secondItem="4al-BF-MpK" secondAttribute="trailing" id="cdW-zS-tvb"/>
+                <constraint firstItem="r81-eH-lad" firstAttribute="leading" secondItem="94p-vy-LD1" secondAttribute="leading" id="gef-lQ-cwy"/>
+                <constraint firstItem="3fH-sN-Cuu" firstAttribute="centerY" secondItem="6gO-ZL-Rhx" secondAttribute="centerY" id="l9u-6n-t90"/>
+                <constraint firstItem="YVl-M3-2Ar" firstAttribute="top" secondItem="94p-vy-LD1" secondAttribute="top" id="mSt-24-AtK"/>
+                <constraint firstItem="4al-BF-MpK" firstAttribute="width" secondItem="r81-eH-lad" secondAttribute="width" id="mqa-G8-Na5"/>
+                <constraint firstItem="orY-9l-TL2" firstAttribute="top" secondItem="94p-vy-LD1" secondAttribute="top" constant="30" id="phq-W3-UX7"/>
+                <constraint firstItem="YVl-M3-2Ar" firstAttribute="leading" secondItem="94p-vy-LD1" secondAttribute="leading" id="rxg-rQ-JrM"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                    <integer key="value" value="6"/>
+                </userDefinedRuntimeAttribute>
+            </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="phoneBtn1" destination="r81-eH-lad" id="06B-4m-5Lu"/>
+                <outlet property="phoneBtn2" destination="4al-BF-MpK" id="yQ3-kS-8j2"/>
+            </connections>
+            <point key="canvasLocation" x="497" y="45"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="拍照" width="64" height="64"/>
+        <image name="相册" width="64" height="64"/>
+        <image name="背景板" width="351" height="123"/>
+    </resources>
+</document>

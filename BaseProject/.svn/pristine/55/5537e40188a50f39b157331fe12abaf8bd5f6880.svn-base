@@ -1,0 +1,158 @@
+//
+//  MineChangeInfoController.m
+//  BaseProject
+//
+//  Created by KOK on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "MineChangeInfoController.h"
+
+@interface MineChangeInfoController ()
+@property (weak, nonatomic) IBOutlet UILabel *typeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *contentTF;
+
+@end
+
+@implementation MineChangeInfoController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    if (_type == 0) {
+        self.navBar.title.text = @"昵称";
+        self.typeLabel.text = @"请输入昵称";
+    }else if(_type == 1) {
+        self.navBar.title.text = @"邮箱";
+        self.typeLabel.text = @"请输入邮箱";
+    }else if(_type == 2) {
+        self.navBar.title.text = @"QQ";
+        self.typeLabel.text = @"请输入QQ";
+    }
+}
+
+- (IBAction)submitAction:(UIButton *)sender
+{
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    NSString *title = @"";
+    
+    NSDictionary *dic;
+    if (_type == 0) {
+        title = @"昵称";
+        
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               @"NickName",@"Action",
+               [UserInformation sharedInstance].UserId,@"UserId",
+               _contentTF.text,@"ActionValue",
+               nil];
+        
+    }else if(_type == 1) {
+        title = @"邮箱";
+        
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               @"Email",@"Action",
+               [UserInformation sharedInstance].UserId,@"UserId",
+               _contentTF.text,@"ActionValue",
+               nil];
+        
+    }else if(_type == 2) {
+        title = @"QQ";
+        
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               @"QQ",@"Action",
+               [UserInformation sharedInstance].UserId,@"UserId",
+               _contentTF.text,@"ActionValue",
+               nil];
+    }
+    
+    
+    if ([_contentTF.text isEqualToString:@""]) {
+        
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:[NSString stringWithFormat:@"请输入%@", title]];
+        
+        return;
+    }
+    
+    
+    //UpdateUserEntity
+    //[6]用户 => 变更用户基本信息(输入参数string Json)
+    //UserId:用户编号
+    //Action:修改信息( 提现密码-WithdrawPassword、昵称-NickName、头像-HeadIcon、邮箱-Email、QQ、籍贯-NativePlace(ProvinceId|CityId|CountyId)、详细地址-Address(Address|Precision|Latitude)、实名认证-RealName(RealName|IDCard)、性别-Gender、生日-Birthday)
+    //ActionValue:值
+    
+    
+    [SVProgressHUD showWithStatus:@"更新中"];
+
+    [SOAPUrlSession SOAPDataWithMethod:@"UpdateUserEntity" parameter:dic success:^(id responseObject) {
+        
+        //返回成功时
+        NSDictionary *responseDic = responseObject;
+        NSLog(@"%@ ----- %@",responseDic[@"Code"],responseDic[@"Message"]);
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            
+            // 更新用户信息
+            [self.navigationController popViewControllerAnimated:YES];
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"更新成功"];
+            
+        } else {
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"更新失败"];
+            
+        }
+        
+        [SVProgressHUD dismiss];
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];    
+        //后台连接直接不成功，弹出“连接服务器失败”
+        NSLog(@"网络异常：连接服务器失败");
+    }];
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

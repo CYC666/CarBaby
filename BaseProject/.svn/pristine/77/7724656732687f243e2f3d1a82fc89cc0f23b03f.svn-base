@@ -1,0 +1,78 @@
+//
+//  MainController.m
+//  LFBaseFrameTwo
+//
+//  Created by 曹老师 on 2018/5/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import "MainController.h"
+#import "TestViewController.h"
+
+@interface MainController ()
+
+@end
+
+@implementation MainController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"首页";
+    
+    [self.navBar.right addTarget:self action:@selector(rightItemButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 导航栏右边按钮响应
+- (void)rightItemButtonAction:(UIButton *)button {
+    
+    TestViewController *ctrl = [[TestViewController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

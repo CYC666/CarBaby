@@ -1,0 +1,350 @@
+//
+//  ForgetPasswordController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ForgetPasswordController.h"
+
+@interface ForgetPasswordController () <UIScrollViewDelegate, UITextFieldDelegate> {
+    
+    BOOL verificationFlag;
+    NSString *codeStr;
+    dispatch_source_t _timer;
+}
+
+@end
+
+@implementation ForgetPasswordController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    
+    self.navBar.title.hidden = NO;
+    
+    
+    _top.constant = Nav_Height + 10;
+    _width.constant = kScreenWidth;
+    
+    
+
+    
+    _codeButton.layer.borderWidth = 1;
+    _codeButton.layer.borderColor = _codeButton.titleLabel.textColor.CGColor;
+    
+    _nextButton.layer.borderWidth = 1;
+    _nextButton.layer.borderColor = _nextButton.titleLabel.textColor.CGColor;
+    
+    _sureButton.layer.borderWidth = 1;
+    _sureButton.layer.borderColor = _sureButton.titleLabel.textColor.CGColor;
+    
+    _phoneField.delegate = self;
+    _codeField.delegate = self;
+    _passwordField1.delegate = self;
+    _passwordField2.delegate = self;
+    [self.sureButton addTarget:self action:@selector(sureButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.codeButton addTarget:self action:@selector(codeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.nextButton addTarget:self action:@selector(nextButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                codeStr = @"验证码失效";
+                
+                verificationFlag = NO;
+                _codeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                //验证码倒计时有效期标志位
+                verificationFlag = YES;
+                
+                //按钮不可点击
+                _codeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 返回按钮响应
+- (void)backButtonAction:(UIButton *)button {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+}
+
+#pragma mark - 获取验证码
+- (void)codeButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    
+   
+    NSString *method = [NSString stringWithFormat:@"GetMobileCode"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         _phoneField.text,@"Mobile",
+                         @"密码找回",@"Title",
+                         nil];
+    
+    //GetMobileCode
+    //[88]系统 =>手机验证码(输入参数string Json)
+    //Mobile:手机号码
+    //Title:发送类别(用户注册、密码找回、绑定手机、更换前手机、更换后手机)
+    
+    
+    button.userInteractionEnabled = NO;
+    [SVProgressHUD showWithStatus:@"获取验证码中"];
+    
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@", responseObject[@"Code"]];
+        if ([code isEqualToString:@"200"]) {
+            
+            codeStr = [NSString stringWithFormat:@"%@", responseObject[@"Data"][@"Code"]];
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [self codeButtonActive];
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"已发送验证码"];
+                
+            });
+            
+        } else {
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                
+            });
+            
+        }
+        
+        
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+#pragma mark - 下一步
+- (void)nextButtonAction:(UIButton *)button {
+    
+    if ([_codeField.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    if([codeStr isEqualToString:@"验证码失效"]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码失效"];
+        return;
+    }
+
+    if (![_codeField.text isEqualToString:codeStr]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码不正确"];
+        return;
+    }
+    
+    [UIView animateWithDuration:.35 animations:^{
+        _view2.transform = CGAffineTransformMakeTranslation(-kScreenWidth, 0);
+    }];
+    
+}
+
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    
+    
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    
+    //登录密码text校验
+    NSString *checkPasswordStr = [SmallFunctionTool checkOutPasswordText:_passwordField1.text withTextName:@"密码"];
+    if (checkPasswordStr != nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:checkPasswordStr];
+        return;
+    }
+    
+    if (![_passwordField1.text isEqualToString:_passwordField2.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"两次密码输入不一致"];
+        return;
+    }
+    
+    //判断短信验证码是否一致
+//    if (![_codeField.text isEqualToString:code]) {
+//        //弹出验证码输入错误的提示
+//        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+//        [showMessage showAlertWith:@"验证码错误，请重新输入"];
+//        return;
+//    }
+    
+    NSString *method = [NSString stringWithFormat:@"ResetPassword"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         _phoneField.text,@"Account",
+                         _passwordField1.text,@"NewPassword",
+                         nil];
+    
+    //ResetPassword
+    //[4]用户 => 重置登录密码(输入参数string Json)
+    //Account:登录账户(手机号码、邮箱)
+    //NewPassword:新密码
+    
+    [SVProgressHUD showWithStatus:@"找回密码中"];
+    button.userInteractionEnabled = NO;
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"密码重置成功"];
+            
+            [self.navigationController popViewControllerAnimated:YES];
+        } else {
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                
+            });
+            
+        }
+        
+        [SVProgressHUD dismiss];
+        button.userInteractionEnabled = YES;
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        [SVProgressHUD dismiss];
+        button.userInteractionEnabled = YES;
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+#pragma mark - 回车自动跳转下一个
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if ([textField isEqual:_phoneField]) {
+        [_codeField becomeFirstResponder];
+        [self codeButtonAction:nil];
+    } else if ([textField isEqual:_codeField]) {
+        [self nextButtonAction:nil];
+    } else if ([textField isEqual:_passwordField1]) {
+        [_passwordField2 becomeFirstResponder];
+    } else if ([textField isEqual:_passwordField2]) {
+        [self sureButtonAction:nil];
+    }
+    
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

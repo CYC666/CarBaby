@@ -1,0 +1,32 @@
+//
+//  AddressModel.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/7.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface AddressModel : NSObject
+
+@property (copy, nonatomic) NSString *areaName;
+@property (copy, nonatomic) NSString *areaid;
+@property (strong, nonatomic) NSMutableArray *chirldData;
+@property (copy, nonatomic) NSString *layer;
+@property (copy, nonatomic) NSString *ssparentidss;
+@property (copy, nonatomic) NSString *pcaid;
+
+
+@end
+
+
+
+//areaName = "外埔乡";
+//areaid = 832120;
+//chirldData =             (
+//);
+//layer = 3;
+//parentid = 832100;
+//pcaid = 3716;
+

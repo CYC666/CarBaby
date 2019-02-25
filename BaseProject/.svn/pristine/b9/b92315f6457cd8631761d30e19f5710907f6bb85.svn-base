@@ -1,0 +1,163 @@
+//
+//  NewsDetialController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "NewsDetialController.h"
+#import "NewsListModel.h"
+#import "CommentController.h"
+
+@interface NewsDetialController ()
+
+@end
+
+@implementation NewsDetialController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"观点详情";
+    _bottomHeight.constant = TabBar_Height;
+    
+    [_button1 addAction:^(NSInteger index) {
+        // 评论
+        CommentController *ctrl = [[CommentController alloc] init];
+        ctrl.newsID = _listModel.newsid;
+        [self.navigationController pushViewController:ctrl animated:YES];
+    }];
+    
+    [_button2 addAction:^(NSInteger index) {
+        // 收藏
+        [self collectAction];
+    }];
+    
+    
+    if (_listModel.evaluationcount.integerValue > 0) {
+        _label1.text = [NSString stringWithFormat:@"评论(%@条)", _listModel.evaluationcount];
+    }
+    
+    
+    if (_listModel.iscollect.integerValue > 0) {
+        _icon2.image = [UIImage imageNamed:@"详情已收藏"];
+    } else {
+        _icon2.image = [UIImage imageNamed:@"详情未收藏"];
+    }
+}
+
+
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 收藏
+- (void)collectAction {
+    
+    //AddCollect
+    //[101]资讯 => 添加|删除收藏 (输入参数string Json)
+    //UserId:用户编号
+    //OperateType:操作类型（0-添加，1-取消）
+    //CollectType:收藏类型（1-资讯、2-钱币）
+    //ObjectValue:收藏对象ID（取消支持多个，多个用‘|’分割）
+    
+    NSString *OperateType = _listModel.iscollect.integerValue > 0 ? @"1" : @"0";
+    
+    NSString *method = [NSString stringWithFormat:@"AddCollect"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         OperateType,@"OperateType",
+                         _listModel.newsid,@"ObjectValue",
+                         @"1",@"CollectType",
+                         nil];
+    
+    
+
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (_listModel.iscollect.integerValue > 0) {
+                    _icon2.image = [UIImage imageNamed:@"详情未收藏"];
+                    _listModel.iscollect = @"0";
+                } else {
+                    _icon2.image = [UIImage imageNamed:@"详情已收藏"];
+                    _listModel.iscollect = @"1";
+                }
+                
+                
+            });
+            
+            
+        }
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:responseObject[@"Message"]];
+            
+        });
+        
+    
+    } failure:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        });
+        
+    }];
+    
+}
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

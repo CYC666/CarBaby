@@ -1,0 +1,76 @@
+//
+//  MineCell.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/22.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface MineCell : UITableViewCell
+
+
+
+@property (weak, nonatomic) IBOutlet UIImageView *icon;
+@property (weak, nonatomic) IBOutlet UILabel *name;
+@property (weak, nonatomic) IBOutlet UILabel *tip;
+
+@property (weak, nonatomic) IBOutlet UIImageView *nameIcon;
+@property (weak, nonatomic) IBOutlet UIImageView *tipIcon;
+
+
+@property (weak, nonatomic) IBOutlet UIView *flowView;
+
+@property (weak, nonatomic) IBOutlet UIButton *button1;
+@property (weak, nonatomic) IBOutlet UIButton *button2;
+
+
+
+@property (weak, nonatomic) IBOutlet UIView *view1;
+@property (weak, nonatomic) IBOutlet UIButton *view1Button;
+@property (weak, nonatomic) IBOutlet UIImageView *view1Icon;
+@property (weak, nonatomic) IBOutlet UILabel *view1Label1;
+@property (weak, nonatomic) IBOutlet UILabel *view1Label2;
+@property (weak, nonatomic) IBOutlet UILabel *view1Label3;
+@property (weak, nonatomic) IBOutlet UIButton *view1FollowButton;
+@property (weak, nonatomic) IBOutlet UIImageView *view1NoDataView;
+
+
+@property (weak, nonatomic) IBOutlet UIView *view2;
+@property (weak, nonatomic) IBOutlet UIButton *view2Button;
+@property (weak, nonatomic) IBOutlet UIImageView *view2Icon;
+@property (weak, nonatomic) IBOutlet UIButton *view2FollowButton;
+@property (weak, nonatomic) IBOutlet UILabel *view2Label1;
+@property (weak, nonatomic) IBOutlet UILabel *view2Label2;
+@property (weak, nonatomic) IBOutlet UILabel *view2Label3;
+@property (weak, nonatomic) IBOutlet UILabel *view2Label4;
+@property (weak, nonatomic) IBOutlet UILabel *view2Label5;
+@property (weak, nonatomic) IBOutlet UIImageView *view2NoDataView;
+
+
+
+
+
+
+
+@property (weak, nonatomic) IBOutlet UIButton *safeButton;
+@property (weak, nonatomic) IBOutlet UIButton *friendButton;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

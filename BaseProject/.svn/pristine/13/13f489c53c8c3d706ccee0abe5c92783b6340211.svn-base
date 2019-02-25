@@ -1,0 +1,42 @@
+//
+//  CommentListModel.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface CommentListModel : NSObject
+
+@property (copy, nonatomic) NSString *evaluationid;
+@property (copy, nonatomic) NSString *newsid;
+@property (copy, nonatomic) NSString *userid;
+@property (copy, nonatomic) NSString *content;
+@property (copy, nonatomic) NSString *createdate;
+@property (copy, nonatomic) NSString *parentid;
+@property (copy, nonatomic) NSString *parentuserid;
+@property (copy, nonatomic) NSString *headicon;
+@property (copy, nonatomic) NSString *isspecial;
+@property (copy, nonatomic) NSString *username;
+@property (copy, nonatomic) NSString *parentusername;
+
+
+
+
+@end
+
+
+//"evaluationid": "f27ce1e1330b4a84be563f47dce311ad",
+//"newsid": "516e5991-c995-4d1e-8844-0f148a4d2516",
+//"userid": "62a62a55d3bc4648b2ef74d89196689f",
+//"content": "嗨",
+//"createdate": "2018-08-23 15:11:00",
+//"parentid": "0",
+//"parentuserid": "0",
+//"headicon": "/Resource/WebUserImage/YR20/20180822143725.jpg",
+//"isspecial": 0,
+//"username": "222",
+//"parentusername": ""
+

@@ -1,0 +1,137 @@
+//
+//  CoinDetailController.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CoinDetailController.h"
+
+@interface CoinDetailController ()
+
+@property (weak, nonatomic) IBOutlet UILabel *label1;
+@property (weak, nonatomic) IBOutlet UILabel *label2;
+@property (weak, nonatomic) IBOutlet UILabel *label3;
+@property (weak, nonatomic) IBOutlet UILabel *label4;
+@property (weak, nonatomic) IBOutlet UILabel *label5;
+@property (weak, nonatomic) IBOutlet UILabel *label6;
+@property (weak, nonatomic) IBOutlet UILabel *label7;
+@property (weak, nonatomic) IBOutlet UILabel *label8;
+@property (weak, nonatomic) IBOutlet UILabel *label9;
+@property (weak, nonatomic) IBOutlet UILabel *label10;
+@property (weak, nonatomic) IBOutlet UILabel *label11;
+@property (weak, nonatomic) IBOutlet UILabel *label12;
+@property (weak, nonatomic) IBOutlet UILabel *label13;
+@property (weak, nonatomic) IBOutlet UILabel *label14;
+
+@property (weak, nonatomic) IBOutlet UIButton *collectButton;
+@property (weak, nonatomic) IBOutlet UIImageView *frontImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *backImageView;
+
+@end
+
+@implementation CoinDetailController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)refreshData
+{
+    _label1.text = _model.fullname;
+    _label2.text = [NSString stringWithFormat:@"目录编号: %@",_model.encode];
+    _label3.text = [NSString stringWithFormat:@"发行日期: %@",_model.issuedate];
+    _label4.text = [NSString stringWithFormat:@"最后发行年份: %@",_model.lastreleaseyear];
+    _label5.text = [NSString stringWithFormat:@"使用: %@",_model.synopsis];
+    _label6.text = [NSString stringWithFormat:@"组成: %@",_model.composition];
+    _label7.text = [NSString stringWithFormat:@"形状: %@",_model.shape];
+    _label8.text = [NSString stringWithFormat:@"重量: %@",_model.weight];
+    _label9.text = [NSString stringWithFormat:@"直径: %@",_model.size];
+    _label10.text = [NSString stringWithFormat:@"面值: %@",_model.facevalue];
+    _label11.text = [NSString stringWithFormat:@"正面: %@",_model.positive];
+    _label12.text = [NSString stringWithFormat:@"背面: %@",_model.back];
+    _label13.text = [NSString stringWithFormat:@"%@",_model.sortcode];
+    _label14.text = [NSString stringWithFormat:@"备注: %@",_model.Description];
+    
+    _collectButton.selected = _model.iscollect;
+    [_frontImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",Image_Base_URL,_model.filepath]] placeholderImage:[UIImage imageNamed:@"default_image"]];
+    [_backImageView sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",Image_Base_URL,_model.backfilepath]] placeholderImage:[UIImage imageNamed:@"default_image"]];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Table view data source
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        return 10 + SCREEN_WIDTH/2.0 + 45;
+    }else{
+        return 377;
+    }
+}
+/*
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    
+    // Configure the _..
+    
+    return cell;
+}
+*/
+
+/*
+// Override to support conditional editing of the table view.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
+*/
+
+/*
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }   
+}
+*/
+
+/*
+// Override to support rearranging the table view.
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+}
+*/
+
+/*
+// Override to support conditional rearranging of the table view.
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return YES;
+}
+*/
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

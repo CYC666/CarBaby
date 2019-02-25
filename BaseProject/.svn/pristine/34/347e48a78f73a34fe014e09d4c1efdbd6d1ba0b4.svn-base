@@ -1,0 +1,59 @@
+//
+//  LoginController.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/22.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CYCController.h"
+
+@interface LoginController : CYCController
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *top;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+@property (weak, nonatomic) IBOutlet UIScrollView *mainView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoHeight;
+
+
+@property (weak, nonatomic) IBOutlet UIButton *loginButton;
+@property (weak, nonatomic) IBOutlet UIButton *registButton;
+@property (weak, nonatomic) IBOutlet UIView *flowView;
+
+// 登录
+@property (weak, nonatomic) IBOutlet UIView *loginView;
+@property (weak, nonatomic) IBOutlet UITextField *loginPhoneField;
+@property (weak, nonatomic) IBOutlet UITextField *loginPasswordField;
+@property (weak, nonatomic) IBOutlet UIButton *loginForgetButton;
+@property (weak, nonatomic) IBOutlet UIButton *logionActionButton;
+
+
+// 注册
+@property (weak, nonatomic) IBOutlet UIView *registView;
+@property (weak, nonatomic) IBOutlet UITextField *registPhoneField;
+@property (weak, nonatomic) IBOutlet UITextField *registCodeField;
+@property (weak, nonatomic) IBOutlet UIButton *registCodeButton;
+@property (weak, nonatomic) IBOutlet UITextField *registPasswordField;
+@property (weak, nonatomic) IBOutlet UITextField *registRecommentField;
+@property (weak, nonatomic) IBOutlet UIButton *registAgreeButton;
+@property (weak, nonatomic) IBOutlet UIButton *registProcotolButton;
+@property (weak, nonatomic) IBOutlet UIButton *registActionButton;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

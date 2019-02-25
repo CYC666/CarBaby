@@ -1,0 +1,355 @@
+//
+//  CollectController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CollectController.h"
+#import "NewsListModel.h"
+#import "MainListCell.h"
+#import "NewsDetialController.h"
+
+@interface CollectController () <UITableViewDelegate, UITableViewDataSource, NewsDetialControllerDelegate> {
+    
+    UITableView *_listTableView;
+    
+    NSInteger currentPage;
+    NSMutableArray *dataArray;   // 数据列表
+    
+    UIView *noDataView;
+}
+
+@end
+
+@implementation CollectController
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    
+    self.view.backgroundColor = Background_Color;
+    dataArray = [NSMutableArray array];
+    // 创建视图
+    [self creatSubViewsAction];
+    
+    
+    
+}
+
+
+#pragma mark ========================================私有方法=============================================
+
+#pragma mark - 创建视图
+- (void)creatSubViewsAction {
+    
+    // 表视图
+    _listTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight - Nav_Height - 50)
+                                                  style:UITableViewStylePlain];
+    _listTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _listTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    _listTableView.backgroundColor = [UIColor clearColor];
+    _listTableView.delegate = self;
+    _listTableView.dataSource = self;
+    [_listTableView registerNib:[UINib nibWithNibName:@"MainListCell" bundle:[NSBundle mainBundle]]
+         forCellReuseIdentifier:@"MainListCell"];
+    [self.view addSubview:_listTableView];
+    
+    if(@available(iOS 11.0, *)){
+        _listTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    
+    _listTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        
+        [self loadListAction:NO];
+        
+        //关闭刷新
+        [_listTableView.mj_header endRefreshing];
+    }];
+    
+    
+    _listTableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        
+        [self loadListAction:YES];
+        
+        //关闭刷新
+        [_listTableView.mj_footer endRefreshing];
+    }];
+    
+    [self loadListAction:NO];
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 收藏
+- (void)collectButtonAction:(UIButton *)button {
+    
+    //AddCollect
+    //[101]资讯 => 添加|删除收藏 (输入参数string Json)
+    //UserId:用户编号
+    //OperateType:操作类型（0-添加，1-取消）
+    //CollectType:收藏类型（1-资讯、2-钱币）
+    //ObjectValue:收藏对象ID（取消支持多个，多个用‘|’分割）
+    
+    __block NewsListModel *model = dataArray[button.tag - 100];
+    
+    NSString *OperateType = model.iscollect.integerValue > 0 ? @"1" : @"0";
+    
+    NSString *method = [NSString stringWithFormat:@"AddCollect"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         OperateType,@"OperateType",
+                         model.newsid,@"ObjectValue",
+                         @"1",@"CollectType",
+                         nil];
+    
+    
+    
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        if ([responseCode isEqualToString:@"200"]) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (model.iscollect.integerValue > 0) {
+                    model.iscollect = @"0";
+                } else {
+                    model.iscollect = @"1";
+                }
+                
+                
+            });
+            
+            
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [_listTableView reloadData];
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:responseObject[@"Message"]];
+            
+        });
+        
+        
+    } failure:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        });
+        
+    }];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark - 加载列表
+- (void)loadListAction:(BOOL)isfooter {
+    
+    if (isfooter) {
+        currentPage ++;
+    } else {
+        currentPage = 1;
+        [dataArray removeAllObjects];
+    }
+    
+    NSString *PageIndex =[NSString stringWithFormat:@"%ld", currentPage];
+    
+    
+    NSString *method = [NSString stringWithFormat:@"GetUserCollectPagList"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         @"10",@"PageSize",
+                         PageIndex,@"PageIndex",
+                         @"1",@"CollectType",
+                         nil];
+    
+    //GetUserCollectPagList
+    //[102]资讯 => 获取收藏列表
+    //PageSize:每页数
+    //PageIndex:当前页
+    //UserId:用户主键编号
+    //CollectType:收藏类型(1-资讯、2-钱币)
+    
+    //发送soap请求
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        //返回的Code字段：200-成功，300-失败，400-无数据，500-内部服务异常
+        NSString *responseCode = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+        NSArray *list;
+        if ([responseCode isEqualToString:@"200"]) {
+            list = responseObject[@"Data"][@"rows"];
+            for (NSDictionary *dic in list) {
+                NewsListModel *model = [NewsListModel mj_objectWithKeyValues:dic];
+                [dataArray addObject:model];
+            }
+            
+            
+        }
+        
+        
+        //主线程更新视图
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (list.count >= 10) {
+                [_listTableView.mj_footer endRefreshing];
+            } else {
+                [_listTableView.mj_footer endRefreshingWithNoMoreData];
+            }
+            
+            [_listTableView reloadData];
+            
+            //去掉无数据时的视图
+            if (noDataView) {
+                [noDataView removeFromSuperview];
+                noDataView = nil;
+            }
+            
+            if (dataArray.count == 0) {
+                
+                noDataView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+                noDataView.backgroundColor = Background_Color;
+                
+                //图标
+                UIImageView *noDataImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"暂无收益数据"]];
+                noDataImage.center = CGPointMake(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0 - 150);
+                [noDataView addSubview:noDataImage];
+                [_listTableView addSubview:noDataView];
+                
+            } else {
+                
+                [_listTableView reloadData];
+                
+            }
+            
+        });
+        
+        
+        
+        
+        
+        
+        
+    } failure:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        });
+        
+    }];
+    
+}
+
+
+
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark - 表视图代理方法
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    return 1;
+    
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return dataArray.count;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return 90;
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    
+    return 0.01;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    
+    return 10;
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    MainListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MainListCell"
+                                                         forIndexPath:indexPath];
+    
+    if (indexPath.row < dataArray.count) {
+        NewsListModel *model = dataArray[indexPath.row];
+        
+        // 图片
+        NSString *path = [NSString stringWithFormat:@"%@%@", Image_Base_URL, model.filepath];
+        [cell.icon sd_setImageWithURL:[NSURL URLWithString:path]
+                     placeholderImage:[UIImage imageNamed:@"loadfail-0"]
+                              options:SDWebImageRetryFailed];
+        cell.label1.text = model.fullhead;
+        cell.label2.text = model.createdate;
+        cell.label3.text = [NSString stringWithFormat:@"评论:%@", model.evaluationcount];
+        
+        if (model.iscollect.integerValue > 0) {
+            [cell.followButton setImage:[UIImage imageNamed:@"已收藏"] forState:UIControlStateNormal];
+        } else {
+            [cell.followButton setImage:[UIImage imageNamed:@"收藏"] forState:UIControlStateNormal];
+        }
+        
+        cell.followButton.tag = 100 + indexPath.row;
+        [cell.followButton addTarget:self action:@selector(collectButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
+    
+    return cell;
+    
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (indexPath.row < dataArray.count) {
+        
+        NewsListModel *model = dataArray[indexPath.row];
+        
+        NewsDetialController *ctrl = [[NewsDetialController alloc] init];
+        ctrl.listModel = model;
+        ctrl.delegate = self;
+        [self.navigationController pushViewController:ctrl animated:YES];
+
+    }
+    
+}
+
+#pragma mark - 详情页收藏有更新
+- (void)NewsDetialControllerCollectionAction {
+    [_listTableView reloadData];
+}
+
+#pragma mark ========================================通知================================================
+
+
+
+
+
+@end

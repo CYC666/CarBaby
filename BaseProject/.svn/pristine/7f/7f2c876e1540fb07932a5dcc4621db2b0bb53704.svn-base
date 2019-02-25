@@ -1,0 +1,53 @@
+//
+//  SortDrowDownView.h
+//  BaseProject
+//
+//  Created by KOK on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface SortDrowDownView : UIView
+
+
+
+- (void)sortShow;
+
+- (void)sortShowBesideView:(UIView *)atView;
+
+- (void)sortHide;
+
++ (SortDrowDownView *)getDropDownView;
+
+@property (copy, nonatomic) void(^selectBlock)(NSInteger index);//
+
+@property (nonatomic, assign) NSInteger trafficIndex;
+
+@property (nonatomic, assign) BOOL isShow;
+
+@end
+
+@interface SortContentView : UIView
+
+@property (weak, nonatomic) IBOutlet UILabel *label1;
+@property (weak, nonatomic) IBOutlet UILabel *label2;
+@property (weak, nonatomic) IBOutlet UILabel *label3;
+
+@property (weak, nonatomic) IBOutlet UIButton *button1;
+@property (weak, nonatomic) IBOutlet UIButton *button2;
+@property (weak, nonatomic) IBOutlet UIButton *button3;
+
+
+
+@end
+
+@interface KKCover : UIButton
+/**
+ *  点击蒙版调用
+ */
+@property (nonatomic, copy) void(^clickCover)(void);
+
+@property (nonatomic, strong) UIButton *noButton;
+
+@end

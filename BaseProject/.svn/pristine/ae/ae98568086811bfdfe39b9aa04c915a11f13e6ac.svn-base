@@ -1,0 +1,82 @@
+//
+//  SortClassCell.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SortClassCell.h"
+#import "SortThirdClassCell.h"
+#import "UIButton+JKBackgroundColor.h"
+@implementation SortClassCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+    
+    [_titleButton jk_setBackgroundColor:Publie_Color forState:UIControlStateSelected];
+    [_titleButton jk_setBackgroundColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end
+
+@implementation SortSecondClassCell
+
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    
+    _myTableView.delegate = self;
+    _myTableView.dataSource = self;
+    _myTableView.rowHeight = 50;
+    [_myTableView registerNib:[UINib nibWithNibName:@"SortThirdClassCell" bundle:nil] forCellReuseIdentifier:@"SortThirdClassCell"];
+    
+}
+
+- (void)setModel:(SortClassModel *)model
+{
+    _model = model;
+    [self.myTableView reloadData];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.model.ChirldData.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    SortThirdClassCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SortThirdClassCell" forIndexPath:indexPath];
+    SortClassModel *model = _model.ChirldData[indexPath.row];
+    [cell.titleButton setTitle:model.ItemName forState:UIControlStateNormal];
+    
+    cell.model = model;
+    __weak typeof(self) weakSelf = self;
+    cell.selectBlock = ^(SortClassModel *model) {
+        if (weakSelf.selectBlock) {
+            weakSelf.selectBlock(model);
+        }
+    };
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+}
+
+@end

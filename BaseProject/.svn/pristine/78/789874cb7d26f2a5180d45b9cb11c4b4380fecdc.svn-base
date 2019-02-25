@@ -1,0 +1,166 @@
+//
+//  ChangePasswordController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/8.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ChangePasswordController.h"
+
+@interface ChangePasswordController () <UITextFieldDelegate>
+
+@end
+
+@implementation ChangePasswordController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"修改密码";
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    _field1.delegate = self;
+    _field2.delegate = self;
+    _field3.delegate = self;
+    [_sureButton addTarget:self action:@selector(sureButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+}
+
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    if ([_field1.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入旧密码"];
+        return;
+    }
+    
+    if ([_field2.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入新密码"];
+        return;
+    }
+    
+    if ([_field3.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请再次输入新密码"];
+        return;
+    }
+    
+    if (![_field3.text isEqualToString:_field2.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"两次输入新密码不一致"];
+        return;
+    }
+    
+    NSString *method = [NSString stringWithFormat:@"appUser/update_password"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"user_id",
+                         _field1.text,@"oldPassword",
+                         _field2.text,@"newPassword",
+                         nil];
+    
+    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        //主线程更新视图
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+            
+        });
+        
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        }
+        
+        
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+    
+    
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if ([textField isEqual:_field1]) {
+        [_field2 becomeFirstResponder];
+    } else if ([textField isEqual:_field2]) {
+        [_field3 becomeFirstResponder];
+    } else {
+        [self sureButtonAction:nil];
+    }
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

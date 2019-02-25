@@ -1,0 +1,47 @@
+//
+//  SortThirdClassCell.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SortThirdClassCell.h"
+#import "UIButton+JKBackgroundColor.h"
+@implementation SortThirdClassCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+    
+    [_touchButton jk_setBackgroundColor:Background_Color forState:UIControlStateHighlighted];
+    [_touchButton jk_setBackgroundColor:[UIColor whiteColor] forState:UIControlStateNormal];
+}
+
+- (IBAction)fingerTouchDown:(UIButton *)sender
+{
+    _circleButton.highlighted = YES;
+    _titleButton.highlighted = YES;
+}
+
+- (IBAction)fingerTouchCancel:(UIButton *)sender
+{
+    
+}
+
+- (IBAction)selectSort:(UIButton *)sender
+{
+    _circleButton.highlighted = NO;
+    _titleButton.highlighted = NO;
+    if (_selectBlock) {
+        _selectBlock(_model);
+    }
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end

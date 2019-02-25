@@ -1,0 +1,114 @@
+//
+//  CYCController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/20.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CYCController.h"
+#import "NavBar.h"
+
+@interface CYCController () {
+    
+    
+    
+}
+
+@end
+
+@implementation CYCController
+
+
+#pragma mark ========================================生命周期========================================
+
+- (void)viewDidLayoutSubviews {
+    
+    [super viewDidLayoutSubviews];
+    
+    
+    self.navBar.frame = CGRectMake(0, 0, kScreenWidth, Nav_Height);
+    if (self.navigationController.viewControllers.count > 1) {
+        // 显示返回按钮
+        self.navBar.left.hidden = NO;
+        [self.navBar.left addTarget:self action:@selector(backButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    } else {
+        //  隐藏返回按钮
+        self.navBar.left.hidden = YES;
+    }
+    
+}
+
+
+
+- (NavBar *)navBar {
+    
+    if (!_navBar) {
+        _navBar = [[NavBar alloc] init];
+        [self.view addSubview:_navBar];
+    }
+    return _navBar;
+    
+}
+
+- (void)setTitle:(NSString *)title {
+    
+    self.navBar.title.text = title;
+    
+}
+
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 返回按钮
+- (void)backButtonAction:(UIButton *)button {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

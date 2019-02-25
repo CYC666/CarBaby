@@ -1,0 +1,216 @@
+//
+//  AddressPickerView.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/7.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "AddressPickerView.h"
+#import "AddressModel.h"
+
+@interface AddressPickerView () <UIPickerViewDelegate, UIPickerViewDataSource>  {
+    
+    
+}
+
+@property (strong, nonatomic) NSMutableArray *dataArray2;
+@property (strong, nonatomic) NSMutableArray *dataArray3;
+
+@property (strong, nonatomic) AddressModel *model1;
+@property (strong, nonatomic) AddressModel *model2;
+@property (strong, nonatomic) AddressModel *model3;
+
+
+@end
+
+@implementation AddressPickerView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    
+    if (self = [super initWithFrame:frame]) {
+        
+        self = [[[NSBundle mainBundle] loadNibNamed:@"AddressPickerView" owner:nil options:nil] firstObject];
+        self.frame = frame;
+    }
+    return self;
+    
+}
+
+
+- (void)awakeFromNib {
+    
+    [super awakeFromNib];
+    
+    _picker1.delegate = self;
+    _picker2.delegate = self;
+    _picker3.delegate = self;
+    
+    _dataArray2 = [NSMutableArray array];
+    _dataArray3 = [NSMutableArray array];
+    
+    [_sureButton addTarget:self action:@selector(sureButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)setDataArray1:(NSMutableArray *)dataArray1 {
+    
+    if (dataArray1.count > 0) {
+        
+        // 省级
+        _dataArray1 = dataArray1;
+        [_picker1 reloadComponent:0];
+        
+        _model1 = _dataArray1.firstObject;
+        
+        if (_model1.chirldData.count > 0) {
+            
+            // 市级
+            _dataArray2 = _model1.chirldData;
+            [_picker2 reloadComponent:0];
+            
+            _model2 = _dataArray2.firstObject;
+            
+            if (_model2.chirldData.count > 0) {
+                
+                // 区
+                _dataArray3 = _model2.chirldData;
+                _model3 = _dataArray3.firstObject;
+                [_picker3 reloadComponent:0];
+                
+                
+            }
+            
+        }
+        
+        
+    }
+    
+    
+    
+    
+}
+
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    if (_delegate) {
+        
+        [_delegate AddressPickerViewSureActionProvince:_model1 country:_model2 city:_model3];
+        
+    }
+    
+}
+
+
+
+#pragma mark ========================================代理方法=============================================
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    
+    return 1;
+    
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    
+    if ([pickerView isEqual:_picker1]) {
+        return _dataArray1.count;
+    } else if ([pickerView isEqual:_picker2]) {
+        return _dataArray2.count;
+    } else {
+        return _dataArray3.count;
+    }
+    
+    
+}
+
+- (nullable NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    
+    NSArray *array;
+    if ([pickerView isEqual:_picker1]) {
+        array = _dataArray1;
+    } else if ([pickerView isEqual:_picker2]) {
+        array = _dataArray2;
+    } else {
+        array = _dataArray3;
+    }
+    
+    AddressModel *model = array[row];
+    return model.areaName;
+    
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    
+    if ([pickerView isEqual:_picker1]) {
+        
+        _model1 = _dataArray1[row];
+        
+        
+        if (_model1.chirldData.count > 0) {
+            
+            // 市级
+            _dataArray2 = _model1.chirldData;
+            [_picker2 reloadComponent:0];
+            
+            _model2 = _dataArray2.firstObject;
+            
+            if (_model2.chirldData.count > 0) {
+                
+                // 区
+                _dataArray3 = _model2.chirldData;
+                _model3 = _model2.chirldData.firstObject;
+                [_picker3 reloadComponent:0];
+                
+                
+            }
+        }
+        
+    } else if ([pickerView isEqual:_picker2]) {
+        
+        _model2 = _dataArray2[row];
+        
+        if (_model2.chirldData.count > 0) {
+            
+            // 区
+            _dataArray3 = _model2.chirldData;
+            [_picker3 reloadComponent:0];
+            
+            
+        }
+        
+    } else {
+        _model3 = _dataArray3[row];
+    }
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

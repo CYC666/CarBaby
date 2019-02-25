@@ -1,0 +1,70 @@
+//
+//  MallController.m
+//  LFBaseFrameTwo
+//
+//  Created by 曹老师 on 2018/5/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import "MallController.h"
+
+@interface MallController ()
+
+@end
+
+@implementation MallController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"世界货币";
+    
+    
+}
+
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

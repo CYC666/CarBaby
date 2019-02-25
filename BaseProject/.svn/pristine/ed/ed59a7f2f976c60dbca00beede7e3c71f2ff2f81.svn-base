@@ -1,0 +1,239 @@
+//
+//  MineController.m
+//  LFBaseFrameTwo
+//
+//  Created by 曹老师 on 2018/5/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import "MineController.h"
+#import "LoginController.h"
+#import "CYCnavController.h"
+#import "EncryptForInterface.h"
+
+
+@interface MineController () {
+    UserInformation *userInfo;              // 用户信息单例
+
+}
+
+@end
+
+@implementation MineController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"";
+    self.navBar.navView.backgroundColor = [UIColor clearColor];
+    self.navBar.right.hidden = NO;
+    [self.navBar.right setImage:[UIImage imageNamed:@"设置"] forState:UIControlStateNormal];
+    [self.navBar.right setTitle:@"" forState:UIControlStateNormal];
+    [self.navBar.right addTarget:self action:@selector(settingButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_button1 addAction:^(NSInteger index) {
+        // 文章
+    }];
+    
+    [_button2 addAction:^(NSInteger index) {
+        // 钱币
+    }];
+    
+    [_safeButton addAction:^(NSInteger index) {
+        // 安全中心
+    }];
+    
+    [_friendButton addAction:^(NSInteger index) {
+        // 我的好友
+    }];
+    
+}
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    
+    [super viewWillAppear:animated];
+    
+    [self checkLoginAction];
+    
+    
+    
+}
+
+
+
+#pragma mark - 检测登录状态
+- (void)checkLoginAction {
+    
+    /*
+     * 判断是否有7天内的登录userId，有的话直接登录
+     */
+    
+    if (userInfo.isLoginWithUserId) {
+        // 已经登录
+        
+        
+        NSString *method = [NSString stringWithFormat:@"GetEntityUser"];
+        NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                             userInfo,@"user_id",
+                             nil];
+        
+        [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+            
+            NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+            
+            if ([code isEqualToString:@"200"]) {
+                
+                userInfo = [UserInformation mj_objectWithKeyValues:responseObject[@"Data"]];
+                
+            }
+        } failure:^(NSError *error) {
+            
+            //后台连接直接不成功，弹出“连接服务器失败”
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+        }];
+        
+        
+        return;
+    }
+    
+    //7天内记住用户登录状态，读取NSUserDefaults文件
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"LoginDate"] == nil ||
+        [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginUserId"] == nil) {
+        
+        NSLog(@"没有登录记录，正常登录");
+        
+        CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+        [self presentViewController:nav animated:YES completion:nil];
+        
+    } else {
+        //登录时间
+        NSString *loginDate = [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginDate"];
+        
+        if ([SmallFunctionTool timeDifferenceForNow:loginDate] > (3600 * 24 * 7)) {
+            NSLog(@"没有7天内的登录记录，正常登录");
+            
+            CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+            [self presentViewController:nav animated:YES completion:nil];
+            
+        } else {
+            
+            //登录id
+            NSString *loginUserId = [[NSUserDefaults standardUserDefaults] objectForKey:@"LoginUserId"];
+            
+            NSString *username = [EncryptForInterface decryptWithText:loginUserId];
+            
+            // 登录，获取个人信息
+            NSString *method = [NSString stringWithFormat:@"GetEntityUser"];
+            NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 username,@"UserId",
+                                 nil];
+            
+            [SVProgressHUD showWithStatus:@"登录中"];
+            
+            [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+                
+                NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+                
+                if ([code isEqualToString:@"200"]) {
+                    
+                    userInfo = [UserInformation mj_objectWithKeyValues:responseObject[@"Data"]];
+                    
+                    //7天内记住用户登录状态，将时间和useId存入NSUserDefaults
+                    {
+                        //获取当前时间
+                        NSString *nowTime = [SmallFunctionTool transitionDateToString:[NSDate date]];
+                        //加密userId
+                        NSString *encryptStr = [EncryptForInterface encryptWithText:username];
+                        
+                        //存入NSUserDefaults文件中
+                        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                        [userDefaults setObject:nowTime forKey:@"LoginDate"];
+                        [userDefaults setObject:encryptStr forKey:@"LoginUserId"];
+                        [userDefaults synchronize]; //立即同步
+                    }
+                    
+                    
+                    
+                } else {
+                    
+                    // 登录失败
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        
+                        CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+                        [self presentViewController:nav animated:YES completion:nil];
+                    });
+                }
+                
+                [SVProgressHUD dismiss];
+                
+            } failure:^(NSError *error) {
+                
+                CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+                [self presentViewController:nav animated:YES completion:nil];
+                
+                //后台连接直接不成功，弹出“连接服务器失败”
+                [SVProgressHUD dismiss];
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+                
+            }];
+        }
+    }
+    
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 设置
+- (void)settingButtonAction:(UIButton *)button {
+    
+    
+    
+}
+
+#pragma mark ========================================网络请求=============================================
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

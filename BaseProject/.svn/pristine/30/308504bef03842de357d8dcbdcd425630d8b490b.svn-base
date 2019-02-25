@@ -1,0 +1,131 @@
+//
+//  MineChangeInfoController.m
+//  BaseProject
+//
+//  Created by KOK on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "MineChangeInfoController.h"
+
+@interface MineChangeInfoController ()
+@property (weak, nonatomic) IBOutlet UILabel *typeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *contentTF;
+
+@end
+
+@implementation MineChangeInfoController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    if (_type == 0) {
+        self.navBar.title.text = @"昵称";
+        self.typeLabel.text = @"请输入昵称";
+    }else if(_type == 1) {
+        self.navBar.title.text = @"邮箱";
+        self.typeLabel.text = @"请输入邮箱";
+    }else if(_type == 2) {
+        self.navBar.title.text = @"QQ";
+        self.typeLabel.text = @"请输入QQ";
+    }
+}
+
+- (IBAction)submitAction:(UIButton *)sender
+{
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    NSString *title = @"";
+    
+    NSString *method;
+    NSDictionary *dic;
+    if (_type == 0) {
+        title = @"昵称";
+        
+        method = [NSString stringWithFormat:@"appUser/update_nickname"];
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               _contentTF.text,@"nickname",
+               [UserInformation sharedInstance].UserId,@"user_id",
+               nil];
+        
+    }else if(_type == 1) {
+        title = @"邮箱";
+        
+        method = [NSString stringWithFormat:@"appUser/update_email"];
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               _contentTF.text,@"e_mail",
+               [UserInformation sharedInstance].UserId,@"user_id",
+               nil];
+        
+    }else if(_type == 2) {
+        title = @"QQ";
+        
+        method = [NSString stringWithFormat:@"appUser/update_qqCode"];
+        dic = [NSDictionary dictionaryWithObjectsAndKeys:
+               _contentTF.text,@"qq_code",
+               [UserInformation sharedInstance].UserId,@"user_id",
+               nil];
+    }
+    
+    
+    if ([_contentTF.text isEqualToString:@""]) {
+        
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:[NSString stringWithFormat:@"请输入%@", title]];
+        
+        return;
+    }
+    
+    
+    
+    
+    
+    
+    [SOAPUrlSession AFHTTPSessionManager:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"code"]];
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            // 回掉
+            if (_finishBlock) {
+                _finishBlock();
+            }
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        
+        //主线程更新视图
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"msg"]]];
+            
+        });
+        
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

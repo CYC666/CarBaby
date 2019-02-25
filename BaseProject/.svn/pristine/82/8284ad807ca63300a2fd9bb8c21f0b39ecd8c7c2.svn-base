@@ -1,0 +1,30 @@
+//
+//  NavBar.h
+//  LFBaseFrameTwo
+//
+//  Created by 曹爸爸 on 2018/6/15.
+//  Copyright © 2018年 admin. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface NavBar : UIView
+
+
+@property (weak, nonatomic) IBOutlet UILabel *title;            // 标题，默认显示
+@property (weak, nonatomic) IBOutlet UIButton *right;           // 右边按钮，默认隐藏
+@property (weak, nonatomic) IBOutlet UIButton *left;            // 左边按钮，默认隐藏
+
+@property (weak, nonatomic) IBOutlet UIView *navView;           // 背景，默认红色
+
+@property (weak, nonatomic) IBOutlet UIView *bottomLine;        // 底部的灰色分割线，默认hidden
+
+//最底下隐藏的线
+@property (weak, nonatomic) IBOutlet UILabel *lineLab;
+
+
+
+
+
+
+@end

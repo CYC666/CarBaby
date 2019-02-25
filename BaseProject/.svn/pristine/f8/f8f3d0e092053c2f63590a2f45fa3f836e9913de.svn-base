@@ -1,0 +1,241 @@
+//
+//  ForgetPasswordController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ForgetPasswordController.h"
+
+@interface ForgetPasswordController () <UIScrollViewDelegate, UITextFieldDelegate> {
+    CGFloat startY; // 滑动视图开始滑动时的偏移
+    BOOL verificationFlag;
+    NSString *code;
+    dispatch_source_t _timer;
+}
+
+@end
+
+@implementation ForgetPasswordController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"忘记密码";
+    self.navBar.left.hidden = NO;
+    
+    
+    _top.constant = Nav_Height + 10;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    _codeButton.layer.borderWidth = 1;
+    _codeButton.layer.borderColor = _codeButton.titleLabel.textColor.CGColor;
+    
+    _mainView.delegate = self;
+    _phoneField.delegate = self;
+    _codeField.delegate = self;
+    _passwordField1.delegate = self;
+    _passwordField2.delegate = self;
+    [self.navBar.left addTarget:self action:@selector(backButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+}
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                code = @"验证码失效";
+                
+                verificationFlag = NO;
+                _codeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                //验证码倒计时有效期标志位
+                verificationFlag = YES;
+                
+                //按钮不可点击
+                _codeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 返回按钮响应
+- (void)backButtonAction:(UIButton *)button {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+    
+}
+
+#pragma mark - 获取验证码
+- (void)codeButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    [self codeButtonActive];
+    
+}
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    [SVProgressHUD showWithStatus:@"修改密码中"];
+    [SVProgressHUD dismissWithDelay:2];
+    
+    //校验手机号码
+    if (! [SmallFunctionTool checkTelNumber:_phoneField.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入正确的手机号码"];
+        return;
+    }
+    
+    if ([code isEqualToString:@""] || code == nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    if([code isEqualToString:@"验证码失效"]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码失效"];
+        return;
+    }
+    
+    //登录密码text校验
+    NSString *checkPasswordStr = [SmallFunctionTool checkOutPasswordText:_passwordField1.text withTextName:@"密码"];
+    if (checkPasswordStr != nil) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:checkPasswordStr];
+        return;
+    }
+    
+    if (![_passwordField1.text isEqualToString:_passwordField2.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"两次密码输入不一致"];
+        return;
+    }
+    
+    //判断短信验证码是否一致
+    if (![_codeField.text isEqualToString:code]) {
+        //弹出验证码输入错误的提示
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"验证码错误，请重新输入"];
+        return;
+    }
+    
+}
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+#pragma mark - 向下滑动隐藏键盘
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    startY = scrollView.mj_offsetY;
+}
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    CGFloat scrollY = scrollView.mj_offsetY;
+    if (scrollY < startY) {
+        [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    }
+    
+    
+}
+
+
+#pragma mark - 回车自动跳转下一个
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if ([textField isEqual:_phoneField]) {
+        [_codeField becomeFirstResponder];
+        [self codeButtonAction:nil];
+    } else if ([textField isEqual:_codeField]) {
+        [_passwordField1 becomeFirstResponder];
+    } else if ([textField isEqual:_passwordField1]) {
+        [_passwordField2 becomeFirstResponder];
+    } else if ([textField isEqual:_passwordField2]) {
+        [self sureButtonAction:nil];
+    }
+    
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

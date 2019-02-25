@@ -1,0 +1,274 @@
+//
+//  ChangeOrderPasswordController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/8.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ChangeOrderPasswordController.h"
+
+
+@interface ChangeOrderPasswordController () <UITextFieldDelegate> {
+    
+    dispatch_source_t _timer;
+    NSString *codeStr;
+    
+}
+
+@end
+
+@implementation ChangeOrderPasswordController
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    if ([UserInformation sharedInstance].WithdrawPassword != nil &&
+        ![[UserInformation sharedInstance].WithdrawPassword isEqualToString:@""]) {
+        self.title = @"修改安全密码";
+    } else {
+        self.title = @"设置安全密码";
+    }
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    _codeButton.layer.borderWidth = 1;
+    _codeButton.layer.borderColor = _codeButton.titleLabel.textColor.CGColor;
+    
+    _field1.delegate = self;
+    _field2.delegate = self;
+    _field3.delegate = self;
+    [_sureButton addTarget:self action:@selector(sureButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_codeButton addTarget:self action:@selector(loadCodeAction:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+
+
+#pragma mark - 验证码的倒计时
+- (void)codeButtonActive {
+    
+    __block int timeout=120; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:@"发送验证码" forState:UIControlStateNormal];
+                
+                //上一次获取的验证码失效
+                codeStr = @"验证码失效";
+                
+
+                _codeButton.enabled = YES;
+                
+            });
+        }else{
+            
+            NSString *strTime = [NSString stringWithFormat:@"%d秒后再发送", timeout];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [_codeButton setTitle:strTime forState:UIControlStateNormal];
+                
+                
+                //按钮不可点击
+                _codeButton.enabled = NO;
+            });
+            timeout--;
+        }
+    });
+    dispatch_resume(_timer);
+    
+}
+
+
+
+#pragma mark ========================================动作响应=============================================
+
+
+
+#pragma mark - 获取验证码
+- (void)loadCodeAction:(UIButton *)button {
+    
+
+    
+    NSString *method = [NSString stringWithFormat:@"GetMobileCode"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].Mobile,@"Mobile",
+                         @"密码找回",@"Title",
+                         nil];
+    
+    //GetMobileCode
+    //[88]系统 =>手机验证码(输入参数string Json)
+    //Mobile:手机号码
+    //Title:发送类别(用户注册、密码找回、绑定手机、更换前手机、更换后手机)
+    
+    
+    button.userInteractionEnabled = NO;
+    [SVProgressHUD showWithStatus:@"获取验证码中"];
+    
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@", responseObject[@"Code"]];
+        if ([code isEqualToString:@"200"]) {
+            
+            codeStr = [NSString stringWithFormat:@"%@", responseObject[@"Data"][@"Code"]];
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [self codeButtonActive];
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:@"已发送验证码"];
+                
+            });
+            
+        } else {
+            
+            //主线程更新视图
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+                [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+                
+            });
+            
+        }
+        
+        
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        button.userInteractionEnabled = YES;
+        [SVProgressHUD dismiss];
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+}
+
+#pragma mark - 确认
+- (void)sureButtonAction:(UIButton *)button {
+    
+    [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
+    
+    if ([_field1.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入验证码"];
+        return;
+    }
+    
+    if ([_field2.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请输入6位数字安全密码"];
+        return;
+    }
+    
+    if ([_field3.text isEqualToString:@""]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"请再次输入6位数字安全密码"];
+        return;
+    }
+    
+    if (![_field3.text isEqualToString:_field2.text]) {
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"两次输入安全密码不一致"];
+        return;
+    }
+    
+    NSString *method = [NSString stringWithFormat:@"UpdateUserEntity"];
+    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:
+                         [UserInformation sharedInstance].UserId,@"UserId",
+                         @"WithdrawPassword",@"Action",
+                         _field2.text,@"ActionValue",
+                         nil];
+    
+    [SOAPUrlSession SOAPDataWithMethod:method parameter:dic success:^(id responseObject) {
+        
+        NSString *code = [NSString stringWithFormat:@"%@",responseObject[@"Code"]];
+        
+       
+        
+        
+        if ([code isEqualToString:@"200"]) {
+            
+            [self.navigationController popViewControllerAnimated:YES];
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:@"更换成功"];
+            
+        } else {
+            FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+            [showMessage showAlertWith:[NSString stringWithFormat:@"%@", responseObject[@"Message"]]];
+        }
+        
+        
+        
+    } failure:^(NSError *error) {
+        
+        //后台连接直接不成功，弹出“连接服务器失败”
+        FadeAlertView *showMessage = [[FadeAlertView alloc] init];
+        [showMessage showAlertWith:@"网络异常：连接服务器失败"];
+    }];
+    
+    
+    
+    
+}
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    if ([textField isEqual:_field1]) {
+        [_field2 becomeFirstResponder];
+    } else if ([textField isEqual:_field2]) {
+        [_field3 becomeFirstResponder];
+    } else {
+        [self sureButtonAction:nil];
+    }
+    
+    return YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

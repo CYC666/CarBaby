@@ -1,0 +1,115 @@
+//
+//  UserInformation.m
+//  YiYanYunGou
+//
+//  Created by admin on 16/3/21.
+//  Copyright © 2016年 admin. All rights reserved.
+//
+
+#import "UserInformation.h"
+
+@implementation UserInformation
+
+static UserInformation *instance;
++ (UserInformation *)sharedInstance{
+    @synchronized(self) {
+        if (!instance) {
+            instance = [[UserInformation alloc]init];
+        }
+    }
+    return instance;
+}
+
++ (id)allocWithZone:(struct _NSZone *)zone{
+    @synchronized(self) {
+        if (!instance) {
+            instance = [super allocWithZone:zone];
+        }
+    }
+    return instance;
+}
+
+- (NSMutableArray *)locationArray {
+    if (_locationArray == nil) {
+        _locationArray = [NSMutableArray array];
+    }
+    return _locationArray;
+}
+
+
+
+//清空所有数据，相当于退出账户
+- (void)clearData{
+    
+    _UserId = nil;
+    _EnCode = nil;
+    _RealName = nil;
+    _RoleType = nil;
+    _RoleName = nil;
+    _IDCard = nil;
+    _NickName = nil;
+    _HeadIcon = nil;
+    _Gender = nil;
+    _Birthday = nil;
+    _Mobile = nil;
+    _Email = nil;
+    _QICQ = nil;
+    _ProvinceId = nil;
+    _ProvinceName = nil;
+    _CityId = nil;
+    _CityName = nil;
+    _CountyId = nil;
+    _CountyName = nil;
+    _Address = nil;
+    _Description = nil;
+    _WithdrawPassword = nil;
+    _IsSpecial = nil;
+    _EnabledMark = nil;
+}
+//判断是否登录了
+- (BOOL)isLoginWithUserId{
+    
+    if ([_UserId isEqualToString:@""] || _UserId == nil) {
+        return NO;
+    } else {
+        return YES;
+    }
+    
+}
+
++ (void)collectCoin:(CoinModel *)model andSuccess:(ABCSuccessBlock)successBlock andFail:(ABCFailBlock)failBlock
+{
+    /*
+     AddCollect
+     [101]资讯 => 添加|删除收藏 (输入参数string Json)
+     UserId:用户编号
+     OperateType:操作类型（0-添加，1-取消） CollectType:收藏类型（1-资讯、2-钱币）
+     ObjectValue:收藏对象ID（取消支持多个，多个用‘|’分割）
+     */
+    NSDictionary *parma = @{
+                            @"UserId":[UserInformation sharedInstance].UserId,
+                            @"OperateType":model.iscollect?@"1":@"0",
+                            @"CollectType":@"2",
+                            @"ObjectValue":model.commodityid,
+                            };
+    [SOAPUrlSession SOAPDataWithMethod:@"AddCollect" parameter:parma success:^(id responseObject) {
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            model.iscollect = !model.iscollect;
+            if (successBlock) {
+                successBlock(model);
+            }
+        }else{
+            if (failBlock) {
+                failBlock(responseObject[@"Message"]);
+            }
+        }
+    } failure:^(NSError *error) {
+        if (failBlock) {
+            failBlock(@"网络请求失败，请稍候重试");
+        }
+    }];
+}
+
+
+
+@end

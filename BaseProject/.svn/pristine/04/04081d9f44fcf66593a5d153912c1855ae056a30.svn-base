@@ -1,0 +1,20 @@
+//
+//  MineChangeInfoController.h
+//  BaseProject
+//
+//  Created by KOK on 2018/7/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+typedef void(^MineChangeInfoControllerFinishBlock)(void);
+
+@interface MineChangeInfoController : CYCController
+
+@property (nonatomic, assign) NSInteger type;
+
+@property (copy, nonatomic) MineChangeInfoControllerFinishBlock finishBlock;
+
+
+@end

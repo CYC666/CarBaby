@@ -1,0 +1,159 @@
+//
+//  SortClassController.m
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SortClassController.h"
+#import "SortClassCell.h"
+#import "SortThirdClassCell.h"
+#import "SortClassModel.h"
+#import "NoSearchCoinController.h"
+@interface SortClassController ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView1;
+@property (weak, nonatomic) IBOutlet UITableView *tableView2;
+
+@property (nonatomic, strong) NSMutableArray *dataArray;
+
+@property (nonatomic, weak) SortClassModel *currentModel;
+
+@end
+
+@implementation SortClassController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"分类";
+    _tableView1.delegate = self;
+    _tableView1.dataSource = self;
+
+    _tableView2.delegate = self;
+    _tableView2.dataSource = self;
+    
+    [self getAllSortData];
+}
+
+- (void)setCurrentModel:(SortClassModel *)currentModel
+{
+    _currentModel = currentModel;
+    [self.tableView1 reloadData];
+    [self.tableView2 reloadData];
+}
+
+- (void)getAllSortData
+{
+    /*
+     GetCoinLabelList
+     [110]钱币 => 获取钱币分类列表(树形结构)
+     */
+
+    [SVProgressHUD showWithStatus:@""];
+    [SOAPUrlSession SOAPDataWithMethod:@"GetCoinLabelList" parameter:nil success:^(id responseObject) {
+        [SVProgressHUD dismiss];
+        self.dataArray = [[NSMutableArray alloc] init];
+        if ([responseObject[@"Code"] integerValue] == 200) {
+            NSArray *data = responseObject[@"Data"];
+            for (NSInteger i = 0; i<data.count; i++) {
+                NSDictionary *dic = data[i];
+                SortClassModel *model = [SortClassModel mj_objectWithKeyValues:dic];
+                [self.dataArray addObject:model];
+            }
+
+        }else{
+            
+        }
+        if (!kArrayIsEmpty(_dataArray)) {
+            SortClassModel *model = _dataArray[0];
+            self.currentModel = model;
+        }
+    } failure:^(NSError *error) {
+        [SVProgressHUD dismiss];
+    }];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (tableView == _tableView1) {
+        return self.dataArray.count;
+    }else{
+        if (_currentModel) {
+            return _currentModel.ChirldData.count;
+        }
+        return 0;
+    }
+    
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == _tableView1) {
+        SortClassCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SortClassCell" forIndexPath:indexPath];
+        
+        SortClassModel *model = _dataArray[indexPath.row];
+        
+        [cell.titleButton setTitle:model.ItemName forState:UIControlStateNormal];
+        if ([model isEqual:_currentModel]) {
+            cell.titleButton.selected = YES;
+        }else{
+            cell.titleButton.selected = NO;
+        }
+        
+        return cell;
+    }else{
+        SortSecondClassCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SortSecondClassCell" forIndexPath:indexPath];
+        SortClassModel *model = _currentModel.ChirldData[indexPath.row];
+        __weak typeof(self) weakSelf = self;
+        cell.selectBlock = ^(SortClassModel *thirdModel) {
+            NoSearchCoinController *vc = [[UIStoryboard storyboardWithName:@"Coin" bundle:nil] instantiateViewControllerWithIdentifier:@"NoSearchCoinController"];
+            vc.sortTitle = thirdModel.ItemName;
+            vc.sortId = thirdModel.ItemId;
+            [weakSelf.navigationController pushViewController:vc animated:YES];
+        };
+        cell.model = model;
+        cell.titleLabel.text = model.ItemName;
+        return cell;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == _tableView1) {
+        return 52;
+    }else{
+        SortClassModel *model = _currentModel.ChirldData[indexPath.row];
+        return 50 + model.ChirldData.count * 50;
+    }
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == _tableView1) {
+        SortClassModel *model = _dataArray[indexPath.row];
+        self.currentModel = model;
+    }
+}
+
+
+
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

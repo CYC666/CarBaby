@@ -1,0 +1,23 @@
+//
+//  ToolTableViewCell.m
+//  BaseProject
+//
+//  Created by admin on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "ToolTableViewCell.h"
+
+@implementation ToolTableViewCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+}
+
+@end

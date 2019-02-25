@@ -1,0 +1,29 @@
+//
+//  ChangePhoneController.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/8.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "CYCController.h"
+
+@interface ChangePhoneController : CYCController
+
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *top;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *width;
+@property (weak, nonatomic) IBOutlet UIScrollView *mainView;
+
+
+@property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
+@property (weak, nonatomic) IBOutlet UITextField *codefield;
+
+@property (weak, nonatomic) IBOutlet UIButton *codeButton;
+@property (weak, nonatomic) IBOutlet UIButton *sureButton;
+
+
+
+
+
+@end

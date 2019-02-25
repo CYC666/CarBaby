@@ -1,0 +1,33 @@
+//
+//  NewsListModel.h
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/23.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface NewsListModel : NSObject
+
+
+@property (copy, nonatomic) NSString *newsid;
+@property (copy, nonatomic) NSString *category;
+@property (copy, nonatomic) NSString *fullhead;
+@property (copy, nonatomic) NSString *createdate;
+@property (copy, nonatomic) NSString *filepath;
+@property (copy, nonatomic) NSString *iscollect;
+@property (copy, nonatomic) NSString *evaluationcount;
+
+
+@end
+
+
+//"newsid": "516e5991-c995-4d1e-8844-0f148a4d2516",
+//"category": "bb62b516-d48f-4a83-b484-21a02df61757",
+//"fullhead": "重大发现",
+//"createdate": "2018-08-17 10:44:04",
+//"filepath": "/Resource/News/20180817/02bbc11bfc3a4e54926692ac0836a8c4.png",
+//"iscollect": 0,
+//"evaluationcount": 0
+

@@ -1,0 +1,22 @@
+//
+//  SortClassModel.h
+//  BaseProject
+//
+//  Created by KOK on 2018/8/24.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface SortClassModel : NSObject
+
+@property (nonatomic, copy) NSString *ItemId;
+@property (nonatomic, copy) NSString *ItemName;
+@property (nonatomic, copy) NSString *ParentId;
+@property (nonatomic, copy) NSString *Description;
+@property (nonatomic, copy) NSString *FilePath;
+@property (nonatomic, assign) NSInteger SortCode;
+@property (nonatomic, strong) NSArray *ChirldData;
+
+
+@end

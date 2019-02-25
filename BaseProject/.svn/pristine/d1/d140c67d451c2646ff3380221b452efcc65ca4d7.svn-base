@@ -1,0 +1,27 @@
+//
+//  ContractwoView.h
+//  LFBaseFrameTwo
+//
+//  Created by admin on 2017/12/22.
+//  Copyright © 2017年 admin. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface ContractwoView : UIView
+
+
+
+//选择相机
+@property (weak, nonatomic) IBOutlet UIButton *phoneBtn1;
+@property (weak, nonatomic) IBOutlet UIButton *phoneBtn2;
+
+
+//简单封装了创建xib的方法
++ (instancetype)viewFromNIB;
+
+
+//简单封装了创建xib的方法---现居地选择
++ (instancetype)viewFromNIBTwo;
+
+@end

@@ -1,0 +1,132 @@
+//
+//  LoginController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/7/22.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "LoginController.h"
+#import "ForgetPasswordController.h"
+#import "EncryptForInterface.h"
+
+#import "Login2Controller.h"
+#import "RegistController.h"
+
+@interface LoginController () <UIScrollViewDelegate, UITextFieldDelegate> {
+    
+    BOOL verificationFlag;
+    NSString *code;
+    dispatch_source_t _timer;
+    
+    UserInformation *userInfo;
+    
+}
+
+@end
+
+@implementation LoginController
+
+
+
+#pragma mark ========================================生命周期========================================
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navBar.title.hidden = YES;
+    
+    _loginButton.layer.borderWidth = 1;
+    _loginButton.layer.borderColor = _loginButton.titleLabel.textColor.CGColor;
+    
+    
+    //对不同的屏幕设置不同的Logo页
+    if (SCREEN_HEIGHT == 480) {
+        [_icon setImage:[UIImage imageNamed:@"640x960"]];
+    } else if (SCREEN_HEIGHT == 568) {
+        [_icon setImage:[UIImage imageNamed:@"640x1136"]];
+    } else if (SCREEN_HEIGHT == 667) {
+        [_icon setImage:[UIImage imageNamed:@"750x1334"]];
+    } else if (SCREEN_HEIGHT == 736) {
+        [_icon setImage:[UIImage imageNamed:@"1242x2208"]];
+    } else {
+        [_icon setImage:[UIImage imageNamed:@"1125x2436"]];
+    }
+    
+    
+    [_loginButton addTarget:self action:@selector(changeLoginButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [_registButton addTarget:self action:@selector(changeRegistButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    
+}
+
+
+#pragma mark ========================================动作响应=============================================
+
+#pragma mark - 退出登录界面
+
+
+#pragma mark - 切换到登录
+- (void)changeLoginButtonAction:(UIButton *)button {
+    
+    Login2Controller *ctrl = [[Login2Controller alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+#pragma mark - 切换到注册
+- (void)changeRegistButtonAction:(UIButton *)button {
+    
+    RegistController *ctrl = [[RegistController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+#pragma mark - 忘记密码
+- (void)forgetPasswordButtonAction:(UIButton *)button {
+    
+    ForgetPasswordController *ctrl = [[ForgetPasswordController alloc] init];
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+}
+
+
+
+
+
+#pragma mark ========================================网络请求=============================================
+
+
+#pragma mark ========================================代理方法=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end

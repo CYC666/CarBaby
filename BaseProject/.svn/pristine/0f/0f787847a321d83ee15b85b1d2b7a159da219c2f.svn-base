@@ -1,0 +1,141 @@
+//
+//  SettingController.m
+//  BaseProject
+//
+//  Created by 曹老师 on 2018/8/7.
+//  Copyright © 2018年 众利创投. All rights reserved.
+//
+
+#import "SettingController.h"
+#import "LoginController.h"
+#import "CYCnavController.h"
+
+@interface SettingController ()
+
+@end
+
+@implementation SettingController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"设置";
+    
+    _top.constant = Nav_Height;
+    _width.constant = kScreenWidth;
+    
+    
+    if(@available(iOS 11.0, *)){
+        _mainView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    
+    // 当前版本号
+    NSString *app_Version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    _versionLabel.text = [NSString stringWithFormat:@"v%@", app_Version];
+    
+    
+    [_aboutButton addTarget:self action:@selector(aboutAction) forControlEvents:UIControlEventTouchUpInside];
+    [_outButton addTarget:self action:@selector(outAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_updateButton addAction:^(NSInteger index) {
+        // 自动升级 CYC666
+    }];
+    
+    [_helpButton addAction:^(NSInteger index) {
+        // 帮助
+    }];
+    
+}
+
+
+#pragma mark - 关于我们
+- (void)aboutAction {
+    
+//    www.goodo.cn
+    WebForCommonViewController *ctrl = [[WebForCommonViewController alloc] init];
+    ctrl.urlString = @"www.goodo.cn";
+    ctrl.naviTitle = @"官网";
+    [self.navigationController pushViewController:ctrl animated:YES];
+    
+    
+    
+}
+
+
+#pragma mark - 退出登录
+- (void)outAction {
+    
+    
+    // 弹框提示是否执行
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:@"确定要退出登录？"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * _Nonnull action) {
+                                                
+                                            }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction * _Nonnull action) {
+                                                
+                                                [[UserInformation sharedInstance] clearData];
+                                                
+                                                NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+                                                [userDefaults removeObjectForKey:@"LoginDate"];
+                                                [userDefaults removeObjectForKey:@"LoginUserId"];
+                                                [userDefaults removeObjectForKey:@"PassWord"];
+                                                [userDefaults synchronize]; //立即同步
+                                                
+                                                
+                                                CYCnavController *nav = [[CYCnavController alloc] initWithRootViewController:[[LoginController alloc] init]];
+                                                [self presentViewController:nav animated:YES completion:^{
+                                                    [self.navigationController popViewControllerAnimated:NO];
+                                                }];
+                                                
+                                            }]];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
+    
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end
