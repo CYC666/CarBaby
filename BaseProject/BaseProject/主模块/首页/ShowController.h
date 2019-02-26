@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ShowController : UIViewController
 
 
-@property (weak, nonatomic) IBOutlet UILabel *label;
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
 
 @property (strong, nonatomic) CoinModel *model;
 

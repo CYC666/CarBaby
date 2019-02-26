@@ -18,7 +18,11 @@ typedef void(^IdBlock)(id object);
 // 获取钱币列表
 + (void)loadCoinList:(NSInteger)pageIndex List:(IdBlock)listBlock;
 
+// 获取消息列表
++ (void)loadNewsList:(NSInteger)pageIndex List:(IdBlock)listBlock;
 
+// 获取钱币目录
++ (void)loadCoinEnumList:(NSInteger)pageIndex List:(IdBlock)listBlock;
 
 @end
 

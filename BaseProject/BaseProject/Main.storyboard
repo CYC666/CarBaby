@@ -9,11 +9,11 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Root Navigation Controller-->
+        <!--BaseRT Navigation Controller-->
         <scene sceneID="WS5-Xm-9vi">
             <objects>
-                <navigationController id="XHn-gL-Hj3" customClass="RTRootNavigationController" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="L33-5o-zN3">
+                <navigationController id="XHn-gL-Hj3" customClass="BaseRTNavigationController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="L33-5o-zN3">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -34,7 +34,7 @@
                         <viewControllerLayoutGuide type="bottom" id="z9h-r7-9UJ"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="NcI-1N-sfX">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>

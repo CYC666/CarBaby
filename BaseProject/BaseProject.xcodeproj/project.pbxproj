@@ -20,7 +20,17 @@
 		1712462022243F2B004F6C6C /* CYC666.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461722243F2B004F6C6C /* CYC666.m */; };
 		1712462122243F2B004F6C6C /* UITextField+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461822243F2B004F6C6C /* UITextField+Action.m */; };
 		1712462222243F2B004F6C6C /* UIButton+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 1712461B22243F2B004F6C6C /* UIButton+Action.m */; };
+		171246252224C896004F6C6C /* MainBottomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 171246242224C896004F6C6C /* MainBottomView.m */; };
+		171246272224C89E004F6C6C /* MainBottomView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 171246262224C89E004F6C6C /* MainBottomView.xib */; };
 		171A682A212E98930019E33C /* UILabel+Action.m in Sources */ = {isa = PBXBuildFile; fileRef = 171A6829212E98930019E33C /* UILabel+Action.m */; };
+		172393192224DF6C00DBF70F /* MessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 172393182224DF6C00DBF70F /* MessageController.m */; };
+		1723931D2224E0B000DBF70F /* MessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1723931B2224E0B000DBF70F /* MessageCell.m */; };
+		1723931E2224E0B000DBF70F /* MessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1723931C2224E0B000DBF70F /* MessageCell.xib */; };
+		172393212224E1FC00DBF70F /* MessageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 172393202224E1FC00DBF70F /* MessageModel.m */; };
+		172393252224E9D800DBF70F /* EnumController.m in Sources */ = {isa = PBXBuildFile; fileRef = 172393242224E9D800DBF70F /* EnumController.m */; };
+		172393292224EA4800DBF70F /* EnumCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 172393272224EA4800DBF70F /* EnumCell.m */; };
+		1723932A2224EA4800DBF70F /* EnumCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 172393282224EA4800DBF70F /* EnumCell.xib */; };
+		1723932C2225114900DBF70F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1723932B2225114900DBF70F /* Launch Screen.storyboard */; };
 		17369A7320EF0EE900C806EA /* PageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17369A6520EF0EE900C806EA /* PageView.m */; };
 		17369A7420EF0EE900C806EA /* SDCycleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17369A6620EF0EE900C806EA /* SDCycleScrollView.m */; };
 		17369A7520EF0EE900C806EA /* UIView+SDExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 17369A6720EF0EE900C806EA /* UIView+SDExtension.m */; };
@@ -128,8 +138,24 @@
 		1712461B22243F2B004F6C6C /* UIButton+Action.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Action.m"; sourceTree = "<group>"; };
 		1712461C22243F2B004F6C6C /* UITextField+Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+Action.h"; sourceTree = "<group>"; };
 		1712461D22243F2B004F6C6C /* CYC666.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CYC666.h; sourceTree = "<group>"; };
+		171246232224C896004F6C6C /* MainBottomView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainBottomView.h; sourceTree = "<group>"; };
+		171246242224C896004F6C6C /* MainBottomView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainBottomView.m; sourceTree = "<group>"; };
+		171246262224C89E004F6C6C /* MainBottomView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainBottomView.xib; sourceTree = "<group>"; };
 		171A6828212E98930019E33C /* UILabel+Action.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UILabel+Action.h"; sourceTree = "<group>"; };
 		171A6829212E98930019E33C /* UILabel+Action.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Action.m"; sourceTree = "<group>"; };
+		172393172224DF6C00DBF70F /* MessageController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageController.h; sourceTree = "<group>"; };
+		172393182224DF6C00DBF70F /* MessageController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageController.m; sourceTree = "<group>"; };
+		1723931A2224E0B000DBF70F /* MessageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageCell.h; sourceTree = "<group>"; };
+		1723931B2224E0B000DBF70F /* MessageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageCell.m; sourceTree = "<group>"; };
+		1723931C2224E0B000DBF70F /* MessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageCell.xib; sourceTree = "<group>"; };
+		1723931F2224E1FC00DBF70F /* MessageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageModel.h; sourceTree = "<group>"; };
+		172393202224E1FC00DBF70F /* MessageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageModel.m; sourceTree = "<group>"; };
+		172393232224E9D800DBF70F /* EnumController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnumController.h; sourceTree = "<group>"; };
+		172393242224E9D800DBF70F /* EnumController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnumController.m; sourceTree = "<group>"; };
+		172393262224EA4800DBF70F /* EnumCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnumCell.h; sourceTree = "<group>"; };
+		172393272224EA4800DBF70F /* EnumCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnumCell.m; sourceTree = "<group>"; };
+		172393282224EA4800DBF70F /* EnumCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EnumCell.xib; sourceTree = "<group>"; };
+		1723932B2225114900DBF70F /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		17369A6220EF0EE900C806EA /* UIView+SDExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SDExtension.h"; sourceTree = "<group>"; };
 		17369A6320EF0EE900C806EA /* SDCycleScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDCycleScrollView.h; sourceTree = "<group>"; };
 		17369A6420EF0EE900C806EA /* SDCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDCollectionViewCell.h; sourceTree = "<group>"; };
@@ -146,6 +172,7 @@
 		17369A7020EF0EE900C806EA /* TAAnimatedDotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAAnimatedDotView.h; sourceTree = "<group>"; };
 		17369A7120EF0EE900C806EA /* TAPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAPageControl.h; sourceTree = "<group>"; };
 		17369A7220EF0EE900C806EA /* PageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageView.h; sourceTree = "<group>"; };
+		1746CB77222520CB00605B99 /* BaseProject.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BaseProject.entitlements; sourceTree = "<group>"; };
 		1767D0A3212A990000D78EFB /* WMPanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WMPanGestureRecognizer.m; sourceTree = "<group>"; };
 		1767D0A4212A990000D78EFB /* WMPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WMPageController.m; sourceTree = "<group>"; };
 		1767D0A6212A990000D78EFB /* WMScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WMScrollView.h; sourceTree = "<group>"; };
@@ -327,6 +354,9 @@
 			children = (
 				171245D1222385C7004F6C6C /* MainController.h */,
 				171245D2222385C7004F6C6C /* MainController.m */,
+				171246232224C896004F6C6C /* MainBottomView.h */,
+				171246242224C896004F6C6C /* MainBottomView.m */,
+				171246262224C89E004F6C6C /* MainBottomView.xib */,
 				1712460822239DF7004F6C6C /* ShowController.h */,
 				1712460922239DF7004F6C6C /* ShowController.m */,
 				1712460A22239DF7004F6C6C /* ShowController.xib */,
@@ -334,6 +364,8 @@
 				1712460E2223F54F004F6C6C /* NetTool.m */,
 				171246102223F5ED004F6C6C /* CoinModel.h */,
 				171246112223F5ED004F6C6C /* CoinModel.m */,
+				172393222224E9C900DBF70F /* 目录 */,
+				172393162224DF5800DBF70F /* 消息 */,
 				1712461322243F2B004F6C6C /* CYC666 */,
 			);
 			path = "首页";
@@ -383,6 +415,32 @@
 				1712461D22243F2B004F6C6C /* CYC666.h */,
 			);
 			path = CYC666;
+			sourceTree = "<group>";
+		};
+		172393162224DF5800DBF70F /* 消息 */ = {
+			isa = PBXGroup;
+			children = (
+				172393172224DF6C00DBF70F /* MessageController.h */,
+				172393182224DF6C00DBF70F /* MessageController.m */,
+				1723931A2224E0B000DBF70F /* MessageCell.h */,
+				1723931B2224E0B000DBF70F /* MessageCell.m */,
+				1723931C2224E0B000DBF70F /* MessageCell.xib */,
+				1723931F2224E1FC00DBF70F /* MessageModel.h */,
+				172393202224E1FC00DBF70F /* MessageModel.m */,
+			);
+			path = "消息";
+			sourceTree = "<group>";
+		};
+		172393222224E9C900DBF70F /* 目录 */ = {
+			isa = PBXGroup;
+			children = (
+				172393232224E9D800DBF70F /* EnumController.h */,
+				172393242224E9D800DBF70F /* EnumController.m */,
+				172393262224EA4800DBF70F /* EnumCell.h */,
+				172393272224EA4800DBF70F /* EnumCell.m */,
+				172393282224EA4800DBF70F /* EnumCell.xib */,
+			);
+			path = "目录";
 			sourceTree = "<group>";
 		};
 		17369A6120EF0EE900C806EA /* SDCycleScrollView */ = {
@@ -464,6 +522,7 @@
 		17918C7320AAC96C00366197 /* BaseProject */ = {
 			isa = PBXGroup;
 			children = (
+				1746CB77222520CB00605B99 /* BaseProject.entitlements */,
 				171245CF2223857D004F6C6C /* 主模块 */,
 				17962D5720AAD1AE001659AE /* 常用组件 */,
 				17962C5B20AAD002001659AE /* 第三方 */,
@@ -475,6 +534,7 @@
 				17962C5020AACD0A001659AE /* WebForCommonViewController.h */,
 				17962C4F20AACD0A001659AE /* WebForCommonViewController.m */,
 				17962C5A20AACF94001659AE /* PrefixHeader.pch */,
+				1723932B2225114900DBF70F /* Launch Screen.storyboard */,
 				17962C4A20AACCC9001659AE /* Main.storyboard */,
 				17918C8020AAC96C00366197 /* Assets.xcassets */,
 				17918C8620AAC96C00366197 /* main.m */,
@@ -819,11 +879,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0920;
-				ORGANIZATIONNAME = "众利创投";
+				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					17918C7020AAC96C00366197 = {
 						CreatedOnToolsVersion = 9.1;
 						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -851,11 +916,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				17962CB420AAD054001659AE /* TencentOpenApi_IOS_Bundle.bundle in Resources */,
+				1723931E2224E0B000DBF70F /* MessageCell.xib in Resources */,
 				8482D7AE212E93A50099AA05 /* README.md in Resources */,
 				8482D7AF212E93A50099AA05 /* IQKeyboardManager.bundle in Resources */,
+				1723932A2224EA4800DBF70F /* EnumCell.xib in Resources */,
 				8482D7AD212E93A50099AA05 /* LICENSE.md in Resources */,
+				1723932C2225114900DBF70F /* Launch Screen.storyboard in Resources */,
 				1712460C22239DF7004F6C6C /* ShowController.xib in Resources */,
 				17962CB920AAD054001659AE /* ShareSDKUI.bundle in Resources */,
+				171246272224C89E004F6C6C /* MainBottomView.xib in Resources */,
 				17962C4B20AACCC9001659AE /* Main.storyboard in Resources */,
 				17962CB220AAD054001659AE /* WeiboSDK.bundle in Resources */,
 				17918C8120AAC96C00366197 /* Assets.xcassets in Resources */,
@@ -945,6 +1014,7 @@
 				1712460F2223F54F004F6C6C /* NetTool.m in Sources */,
 				17962D9120AAD206001659AE /* UserInformation.m in Sources */,
 				17369A7520EF0EE900C806EA /* UIView+SDExtension.m in Sources */,
+				172393192224DF6C00DBF70F /* MessageController.m in Sources */,
 				1767D0B1212A990000D78EFB /* WMPageController.m in Sources */,
 				17369A7A20EF0EE900C806EA /* TAAbstractDotView.m in Sources */,
 				8482D7A1212E93A50099AA05 /* IQUITextFieldView+Additions.m in Sources */,
@@ -960,12 +1030,14 @@
 				17962D8020AAD1BF001659AE /* GTMBase64.m in Sources */,
 				17962D5420AAD171001659AE /* WXUserDefaults.m in Sources */,
 				1712461F22243F2B004F6C6C /* UIImageView+Action.m in Sources */,
+				1723931D2224E0B000DBF70F /* MessageCell.m in Sources */,
 				8482D7A6212E93A50099AA05 /* IQKeyboardReturnKeyHandler.m in Sources */,
 				8482D7A8212E93A50099AA05 /* IQBarButtonItem.m in Sources */,
 				17962D8A20AAD1BF001659AE /* UIView+JKFrame.m in Sources */,
 				8482D7AA212E93A50099AA05 /* IQTitleBarButtonItem.m in Sources */,
 				17962CC320AAD0BC001659AE /* JRSwizzle.m in Sources */,
 				1767D0B0212A990000D78EFB /* WMPanGestureRecognizer.m in Sources */,
+				171246252224C896004F6C6C /* MainBottomView.m in Sources */,
 				9E705785212FB29400107840 /* UIButton+JKBackgroundColor.m in Sources */,
 				17962D8D20AAD1BF001659AE /* Reachability.m in Sources */,
 				8482D7A2212E93A50099AA05 /* IQUIView+Hierarchy.m in Sources */,
@@ -986,6 +1058,7 @@
 				8482D7AB212E93A50099AA05 /* IQToolbar.m in Sources */,
 				171245DE222386FB004F6C6C /* BaseRTNavigationController.m in Sources */,
 				17369A7920EF0EE900C806EA /* TAAnimatedDotView.m in Sources */,
+				172393212224E1FC00DBF70F /* MessageModel.m in Sources */,
 				17F6A16F212BE4E600259237 /* UIButton+Action.m in Sources */,
 				1712460B22239DF7004F6C6C /* ShowController.m in Sources */,
 				17962D5520AAD171001659AE /* WXApiManager.m in Sources */,
@@ -996,6 +1069,7 @@
 				8482D7A5212E93A50099AA05 /* IQKeyboardManager.m in Sources */,
 				8482D7A3212E93A50099AA05 /* IQUIViewController+Additions.m in Sources */,
 				17369A7720EF0EE900C806EA /* TADotView.m in Sources */,
+				172393292224EA4800DBF70F /* EnumCell.m in Sources */,
 				17962D8120AAD1BF001659AE /* BBBadgeBarButtonItem.m in Sources */,
 				1712462222243F2B004F6C6C /* UIButton+Action.m in Sources */,
 				171245D3222385C7004F6C6C /* MainController.m in Sources */,
@@ -1004,6 +1078,7 @@
 				17962D8820AAD1BF001659AE /* UIColor+expanded.m in Sources */,
 				171245DD222386FB004F6C6C /* UIViewController+RTRootNavigationController.m in Sources */,
 				17962D8220AAD1BF001659AE /* CALayer+Addition.m in Sources */,
+				172393252224E9D800DBF70F /* EnumController.m in Sources */,
 				17962D8720AAD1BF001659AE /* UITextField+YX.m in Sources */,
 				17962D8C20AAD1BF001659AE /* LocationServiceClass.m in Sources */,
 				8482D7A7212E93A50099AA05 /* IQTextView.m in Sources */,
@@ -1132,9 +1207,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BaseProject/BaseProject.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = WU3DD344F3;
+				DEVELOPMENT_TEAM = 6X53KNM22W;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BaseProject/第三方/ShareSDK/Support/PlatformSDK/QQSDK",
@@ -1167,10 +1243,10 @@
 					"$(PROJECT_DIR)/BaseProject/第三方/aliPaySDK",
 					"$(PROJECT_DIR)/BaseProject/第三方/WeiXinSDK",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cyc.teacher.CarBaby;
+				PRODUCT_BUNDLE_IDENTIFIER = cyc.teacher.CoinCollect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "0a02061e-4982-45c1-bd74-59ee7ea8bc0a";
-				PROVISIONING_PROFILE_SPECIFIER = Wildcard_Hoc;
+				PROVISIONING_PROFILE_SPECIFIER = "CoinCollect ADHoc";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1181,9 +1257,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = BaseProject/BaseProject.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = WU3DD344F3;
+				DEVELOPMENT_TEAM = 6X53KNM22W;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/BaseProject/第三方/ShareSDK/Support/PlatformSDK/QQSDK",
@@ -1216,10 +1293,10 @@
 					"$(PROJECT_DIR)/BaseProject/第三方/aliPaySDK",
 					"$(PROJECT_DIR)/BaseProject/第三方/WeiXinSDK",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = cyc.teacher.CarBaby;
+				PRODUCT_BUNDLE_IDENTIFIER = cyc.teacher.CoinCollect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "0a02061e-4982-45c1-bd74-59ee7ea8bc0a";
-				PROVISIONING_PROFILE_SPECIFIER = Wildcard_Hoc;
+				PROVISIONING_PROFILE_SPECIFIER = "CoinCollect Distribution";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

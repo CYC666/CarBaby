@@ -943,8 +943,8 @@ __attribute((overloadable)) static inline UIViewController *RTSafeWrapViewContro
                 //backButton.backgroundColor = [UIColor greenColor];
                 //[backButton sizeToFit];
                 [backButton addTarget:self action:@selector(onBack:) forControlEvents:UIControlEventTouchUpInside];
-                [backButton setImage:[UIImage imageNamed:@"nav_back"] forState:UIControlStateNormal];
-                [backButton setImage:[UIImage imageNamed:@"nav_back"] forState:UIControlStateHighlighted];
+                [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+                [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateHighlighted];
                 backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -3, 0, 0 );//系统默认到左边是15，这里要求是12
                 [backButton setTitle:@"    " forState:UIControlStateNormal];
                 viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
