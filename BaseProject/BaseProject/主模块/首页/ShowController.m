@@ -50,7 +50,7 @@
     self.label2.text = [NSString stringWithFormat:@"目录编号: %@", self.model.encode];
     self.label3.text = [NSString stringWithFormat:@"国家: %@", self.model.barcode];
     self.label4.text = [NSString stringWithFormat:@"发行日期: %@", self.model.issuedate];
-    self.label5.text = [NSString stringWithFormat:@"最后发型年份 %@", self.model.lastreleaseyear];
+    self.label5.text = [NSString stringWithFormat:@"最后发型年份: %@", self.model.lastreleaseyear];
     self.label6.text = [NSString stringWithFormat:@"使用: %@", self.model.synopsis];
     self.label7.text = [NSString stringWithFormat:@"组成: %@", self.model.composition];
     self.label8.text = [NSString stringWithFormat:@"形状: %@", self.model.shape];
